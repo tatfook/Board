@@ -2196,7 +2196,8 @@ App.prototype.start = function()
 						else
 						{
 							var id = this.getDiagramId();
-							
+							urlParams['splash'] = 0;// force not show splash
+
 							if (urlParams['splash'] == '0' && (id == null || id.length == 0))
 							{
 								if (!mxClient.IS_CHROMEAPP)
