@@ -3669,7 +3669,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 			mxUtils.write(googleOption, mxResources.get('googleDrive'));
 			serviceSelect.appendChild(googleOption);
 			
-			addLogo(IMAGE_PATH + '/google-drive-logo.svg', mxResources.get('googleDrive'), App.MODE_GOOGLE, 'drive');
+			// addLogo(IMAGE_PATH + '/google-drive-logo.svg', mxResources.get('googleDrive'), App.MODE_GOOGLE, 'drive');
 		}
 		
 		if (typeof window.OneDriveClient === 'function')
@@ -3684,7 +3684,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 				oneDriveOption.setAttribute('selected', 'selected');
 			}
 			
-			addLogo(IMAGE_PATH + '/onedrive-logo.svg', mxResources.get('oneDrive'), App.MODE_ONEDRIVE, 'oneDrive');
+			// addLogo(IMAGE_PATH + '/onedrive-logo.svg', mxResources.get('oneDrive'), App.MODE_ONEDRIVE, 'oneDrive');
 		}
 
 		if (typeof window.DropboxClient === 'function')
@@ -3699,7 +3699,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 				dropboxOption.setAttribute('selected', 'selected');
 			}
 			
-			addLogo(IMAGE_PATH + '/dropbox-logo.svg', mxResources.get('dropbox'), App.MODE_DROPBOX, 'dropbox');
+			// addLogo(IMAGE_PATH + '/dropbox-logo.svg', mxResources.get('dropbox'), App.MODE_DROPBOX, 'dropbox');
 		}
 
 		if (editorUi.gitHub != null)
@@ -3708,8 +3708,18 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 			gitHubOption.setAttribute('value', App.MODE_GITHUB);
 			mxUtils.write(gitHubOption, mxResources.get('github'));
 			serviceSelect.appendChild(gitHubOption);
-			
-			addLogo(IMAGE_PATH + '/github-logo.svg', mxResources.get('github'), App.MODE_GITHUB, 'gitHub');
+
+			// addLogo(IMAGE_PATH + '/github-logo.svg', mxResources.get('github'), App.MODE_GITHUB, 'gitHub');
+		}
+
+		if (editorUi.keepwork != null)
+		{
+			var keepworkOption = document.createElement('option');
+			keepworkOption.setAttribute('value', App.MODE_GITHUB);
+			mxUtils.write(keepworkOption, mxResources.get('github'));
+			serviceSelect.appendChild(keepworkOption);
+
+			addLogo(IMAGE_PATH + '/github-logo.svg', '保存到Keepwork', App.MODE_KEEPWORK, 'gitHub');
 		}
 
 		if (editorUi.trello != null)
@@ -3719,7 +3729,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 			mxUtils.write(trelloOption, mxResources.get('trello'));
 			serviceSelect.appendChild(trelloOption);
 			
-			addLogo(IMAGE_PATH + '/trello-logo.svg', mxResources.get('trello'), App.MODE_TRELLO, 'trello');
+			// addLogo(IMAGE_PATH + '/trello-logo.svg', mxResources.get('trello'), App.MODE_TRELLO, 'trello');
 		}
 	}
 	
@@ -3738,7 +3748,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 		
 		if (showDeviceButton)
 		{
-			addLogo(IMAGE_PATH + '/osa_drive-harddisk.png', mxResources.get('device'), App.MODE_DEVICE);
+			// addLogo(IMAGE_PATH + '/osa_drive-harddisk.png', mxResources.get('device'), App.MODE_DEVICE);
 		}
 	}
 	
@@ -3754,7 +3764,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 			browserOption.setAttribute('selected', 'selected');
 		}
 		
-		addLogo(IMAGE_PATH + '/osa_database.png', mxResources.get('browser'), App.MODE_BROWSER);
+		// addLogo(IMAGE_PATH + '/osa_database.png', mxResources.get('browser'), App.MODE_BROWSER);
 	}
 
 	function change(newMode)
@@ -3793,7 +3803,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 				{
 					ext = '.xml';
 				}
-				
+
 				if (idx >= 0)
 				{
 					fn = fn.substring(0, idx);
@@ -3850,8 +3860,9 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 	
 	function create(mode)
 	{
+
 		var title = nameInput.value;
-		
+
 		if (mode == null || (title != null && title.length > 0))
 		{
 			editorUi.hideDialog();
@@ -3878,7 +3889,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 		});
 		
 		openBtn.className = 'geBtn';
-		btns.appendChild(openBtn);
+		btns.appendChild(openBtn); 
 	}
 	
 	if (!mxClient.IS_IOS || !showButtons)
@@ -3887,7 +3898,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 		{
 			create((showDeviceButton) ? 'download' : ((showButtons) ? App.MODE_DEVICE : serviceSelect.value));
 		});
-		
+
 		createBtn.className = 'geBtn gePrimaryBtn';
 		btns.appendChild(createBtn);
 	}
@@ -3911,7 +3922,7 @@ var CreateDialog = function(editorUi, title, createFn, cancelFn, dlgTitle, btnLa
 		}
 	});
 
-	div.appendChild(btns);
+	// div.appendChild(btns);
 
 	this.container = div;
 };

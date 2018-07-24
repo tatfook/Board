@@ -7,6 +7,7 @@
 // is used for development mode where the JS is in separate
 // files and the mxClient.js loads other files.
 // Adds external dependencies
+mxscript(drawDevUrl + 'js/jquery-1.7.1.min.js');
 mxscript(drawDevUrl + 'js/spin/spin.min.js');
 mxscript(drawDevUrl + 'js/deflate/pako.min.js');
 mxscript(drawDevUrl + 'js/deflate/base64.js');
@@ -95,6 +96,7 @@ mxscript(drawDevUrl + 'js/diagramly/DropboxClient.js');
 mxscript(drawDevUrl + 'js/diagramly/GitHubFile.js');
 mxscript(drawDevUrl + 'js/diagramly/GitHubLibrary.js');
 mxscript(drawDevUrl + 'js/diagramly/GitHubClient.js');
+mxscript(drawDevUrl + 'js/diagramly/KeepworkClient.js');
 mxscript(drawDevUrl + 'js/diagramly/OneDriveFile.js');
 mxscript(drawDevUrl + 'js/diagramly/OneDriveLibrary.js');
 mxscript(drawDevUrl + 'js/diagramly/OneDriveClient.js');

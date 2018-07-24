@@ -3049,7 +3049,7 @@ EditorUi.prototype.createUi = function()
 	
 	if (this.menubar != null)
 	{
-		this.menubarContainer.appendChild(this.menubar.container);
+		// this.menubarContainer.appendChild(this.menubar.container);
 	}
 	
 	// Adds status bar in menubar

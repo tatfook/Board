@@ -389,8 +389,7 @@ DrawioFile.prototype.addUnsavedStatus = function(err)
 			{
 				mxEvent.addListener(links[0], 'click', mxUtils.bind(this, function()
 				{
-					alert("save to qiniu");
-					// this.ui.actions.get((this.ui.mode == null) ? 'saveAs' : 'save').funct();
+					this.ui.actions.get((this.ui.mode == null) ? 'saveAs' : 'save').funct();
 				}));
 			}
 		}

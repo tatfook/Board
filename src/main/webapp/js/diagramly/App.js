@@ -139,6 +139,11 @@ App.MODE_GITHUB = 'github';
 /**
  * Sets the delay for autosave in milliseconds. Default is 2000.
  */
+App.MODE_KEEPWORK = 'keepwork';
+
+/**
+ * Sets the delay for autosave in milliseconds. Default is 2000.
+ */
 App.MODE_DEVICE = 'device';
 
 /**
@@ -798,6 +803,12 @@ App.prototype.init = function()
 	 * Holds the listener for description changes.
 	 */	
 	this.descriptorChangedListener = mxUtils.bind(this, this.descriptorChanged);
+
+	/**
+	 * Creates gitlab client.
+	 */
+
+	this.keepwork = new KeepworkClient(this) || null
 
 	/**
 	 * Creates github client.
@@ -3201,6 +3212,13 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 				}));
 			}
 		}
+		else if (mode == App.MODE_KEEPWORK)
+		{
+			this.keepwork.save(title, function() {
+				complete();
+				done();
+			})
+		}
 		else
 		{
 			complete();
@@ -4119,6 +4137,11 @@ App.prototype.pickFolder = function(mode, fn, enabled)
 			fn(folderPath);
 		}));
 	}
+	else if (enabled && mode == App.MODE_KEEPWORK && this.keepwork != null)
+	{
+		resume();
+		fn()
+	}
 	else if (enabled && mode == App.MODE_TRELLO && this.trello != null)
 	{
 		this.trello.pickFolder(mxUtils.bind(this, function(cardId)
@@ -4592,10 +4615,10 @@ App.prototype.updateHeader = function()
 			this.appIcon.style.backgroundImage = logo;
 		}));
 		
-		if (urlParams['embed'] != '1')
-		{
-			this.menubarContainer.appendChild(this.appIcon);
-		}
+		// if (urlParams['embed'] != '1')
+		// {
+		// 	this.menubarContainer.appendChild(this.appIcon);
+		// }
 	
 		this.fnameWrapper = document.createElement('div');
 		this.fnameWrapper.style.position = 'absolute';
