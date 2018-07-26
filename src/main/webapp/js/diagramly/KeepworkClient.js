@@ -163,8 +163,6 @@ KeepworkClient.prototype.get = function(url, params, callback) {
 }
 
 KeepworkClient.prototype.read = function() {
-	console.log(urlParams)
-	console.log(this.editorUi.openLocalFile)
 	var self = this;
 	var url = '';
 
@@ -177,9 +175,14 @@ KeepworkClient.prototype.read = function() {
 	}
 
 	if (url) {
-		this.get(url, null, function(data){
-			console.log(data)
-			self.editorUi.openLocalFile(data, 'test')
+		var lastDotIndex = url.lastIndexOf('.');
+		var lastSlashIndex = url.lastIndexOf('/');
+
+		var filename = url.substring(lastSlashIndex + 1, lastDotIndex)
+
+		this.get(url + '?bust' + Date.now(), null, function(data){
+			self.editorUi.setCurrentFile(null)
+			self.editorUi.openLocalFile(data, filename, 'keepwork')
 		})
 	}
 }
@@ -188,15 +191,15 @@ KeepworkClient.prototype.delete = function() {
 	var url = this.getGitlabBaseUrl() + ''
 }
 
-KeepworkClient.prototype.save = function(title, callback) {
-	var xmlContent = this.editorUi.getCurrentFile().data;
+KeepworkClient.prototype.save = function(title, data, callback) {
+	var xmlContent = data;
 	var svgRoot = this.editorUi.editor.graph.getSvg();
 	var svgContent = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' + mxUtils.getXml(svgRoot);
 
 	var self = this;
 
 	var xmlUrl = self.userinfo.username + '/' + 'board/' + title + '/' + title + '.xml';
-	var svgUrl = self.userinfo.username + '/' + 'board/' + title + '/' + title + '.svg'
+	var svgUrl = self.userinfo.username + '/' + 'board/' + title + '/' + title + '.svg';
 
 	function updateXml(callback) {
 		self.write(xmlUrl, xmlContent, callback);

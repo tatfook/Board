@@ -3214,7 +3214,7 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 		}
 		else if (mode == App.MODE_KEEPWORK)
 		{
-			this.keepwork.save(title, function() {
+			this.keepwork.save(title, data, function() {
 				complete();
 				done();
 			})
