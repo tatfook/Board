@@ -335,6 +335,7 @@
 				<file name="GitHubFile.js" />
 				<file name="GitHubLibrary.js" />
 				<file name="GitHubClient.js" />
+				<file name="KeepworkClient.js" />
 				<file name="TrelloFile.js" />
 				<file name="TrelloLibrary.js" />
 				<file name="TrelloClient.js" />
@@ -351,6 +352,7 @@
 		</jscomp>
 
 		<concat destfile="${war.dir}/js/app.min.js" fixlastline="yes" append="no">
+			<filelist dir="${war.dir}/js/" files="jquery-1.7.1.min.js"/>
 			<filelist dir="${war.dir}/js/spin" files="spin.min.js"/>
 			<filelist dir="${war.dir}/js/sanitizer" files="sanitizer.min.js"/>
 			<filelist dir="${war.dir}/js/deflate" files="pako.min.js"/>
