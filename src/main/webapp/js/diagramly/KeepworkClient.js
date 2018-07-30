@@ -168,6 +168,7 @@ KeepworkClient.prototype.read = function() {
 
 	if (urlParams && urlParams['initxml']) {
 		url = urlParams['initxml'];
+		urlParams['initxml'] = null;
 	}
 
 	if(window.keepworkSaveUrl && window.keepworkSaveUrl.xmlUrl) {
@@ -178,17 +179,40 @@ KeepworkClient.prototype.read = function() {
 		var lastDotIndex = url.lastIndexOf('.');
 		var lastSlashIndex = url.lastIndexOf('/');
 
-		var filename = url.substring(lastSlashIndex + 1, lastDotIndex)
+		var filename = url.substring(lastSlashIndex + 1, lastDotIndex);
+
+		filename = filename ? decodeURIComponent(filename) : '';
 
 		this.get(url + '?bust' + Date.now(), null, function(data){
-			self.editorUi.setCurrentFile(null)
-			self.editorUi.openLocalFile(data, filename, 'keepwork')
+			self.editorUi.setCurrentFile(null);
+			self.editorUi.openLocalFile(data, filename, 'keepwork');
 		})
+	} else {
+		setTimeout(function() {
+			self.editorUi.setCurrentFile(null);
+			self.create();
+		}, 0)
 	}
 }
 
-KeepworkClient.prototype.delete = function() {
-	var url = this.getGitlabBaseUrl() + ''
+KeepworkClient.prototype.create = function() {
+	var self = this;
+
+	self.editorUi.mode = App.MODE_KEEPWORK;
+
+	var compact = self.editorUi.isOffline();
+	var dlg = new NewDialog(self.editorUi, compact);
+
+	self.editorUi.showDialog(dlg.container, (compact) ? 350 : 620, (compact) ? 70 : 440, true, true, function(cancel)
+	{
+		if (cancel && self.editorUi.getCurrentFile() == null)
+		{
+			// self.editorUi.showSplash();
+			self.editorUi.openLocalFile(self.editorUi.emptyDiagramXml, self.editorUi.defaultFilename, 'keepwork');
+		}
+	});
+	
+	dlg.init();
 }
 
 KeepworkClient.prototype.save = function(title, data, callback) {

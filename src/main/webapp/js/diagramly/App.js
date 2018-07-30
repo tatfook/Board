@@ -3214,10 +3214,10 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 		}
 		else if (mode == App.MODE_KEEPWORK)
 		{
-			this.keepwork.save(title, data, function() {
+			this.keepwork.save(title, data, mxUtils.bind(this, function() {
 				complete();
-				done();
-			})
+				this.fileCreated(new LocalFile(this, data, title, 'keepwork'), libs, replace, done);
+			}))
 		}
 		else
 		{

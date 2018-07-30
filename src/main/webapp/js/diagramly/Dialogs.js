@@ -2824,6 +2824,10 @@ var NewDialog = function(editorUi, compact, showName, callback, createOnly, canc
 	{
 		ext = editorUi.trello.extension;
 	}
+	else if (editorUi.mode == App.MODE_KEEPWORK && editorUi.keepwork != null)
+	{
+		ext = '';
+	}
 	
 	var nameInput = document.createElement('input');
 	nameInput.setAttribute('value', editorUi.defaultFilename + ext);
