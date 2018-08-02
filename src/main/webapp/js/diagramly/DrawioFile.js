@@ -166,7 +166,7 @@ DrawioFile.prototype.setModified = function(value)
  */
 DrawioFile.prototype.isAutosaveOptional = function()
 {
-	return false;
+	return true;
 };
 
 /**
@@ -307,7 +307,7 @@ DrawioFile.prototype.open = function()
 			(edit == null || !edit.ignoreEdit))
 		{
 			this.setModified(true);
-			
+
 			if (this.isAutosave())
 			{
 				this.ui.editor.setStatus(mxUtils.htmlEntities(mxResources.get('saving')) + '...');

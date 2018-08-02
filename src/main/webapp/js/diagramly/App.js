@@ -810,6 +810,17 @@ App.prototype.init = function()
 
 	this.keepwork = new KeepworkClient(this) || null
 
+	if (this.keepwork != null)
+	{
+		this.keepwork.addListener('userChanged', mxUtils.bind(this, function()
+		{
+			// this.updateUserElement();
+			// this.restoreLibraries();
+		}))
+
+		this.fireEvent(new mxEventObject('clientLoaded', 'client', this.keepwork));
+	}
+
 	/**
 	 * Creates github client.
 	 */
@@ -817,7 +828,7 @@ App.prototype.init = function()
 			mxClient.IS_IE11 || mxClient.IS_EDGE) &&
 			(urlParams['gh'] != '0' && (urlParams['embed'] != '1' ||
 			urlParams['gh'] == '1')) ? new GitHubClient(this) : null;
-	
+
 	if (this.gitHub != null)
 	{
 		this.gitHub.addListener('userChanged', mxUtils.bind(this, function()
@@ -3182,6 +3193,14 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 				this.fileCreated(file, libs, replace, done);
 			}), error, false, folderId);
 		}
+		else if (mode == App.MODE_KEEPWORK && this.keepwork != null)
+		{
+			this.keepwork.insertFile(title, data, mxUtils.bind(this, function(file)
+			{
+				complete();
+				this.fileCreated(file, libs, replace, done);
+			}));
+		}
 		else if (mode == App.MODE_BROWSER)
 		{
 			complete();
@@ -3211,13 +3230,6 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 					}
 				}));
 			}
-		}
-		else if (mode == App.MODE_KEEPWORK)
-		{
-			this.keepwork.save(title, data, mxUtils.bind(this, function() {
-				complete();
-				this.fileCreated(new LocalFile(this, data, title, 'keepwork'), libs, replace, done);
-			}))
 		}
 		else
 		{
@@ -3280,7 +3292,7 @@ App.prototype.fileCreated = function(file, libs, replace, done)
 		{
 			this.spinner.stop();
 		});
-		
+
 		var fn = mxUtils.bind(this, function()
 		{
 			complete();
@@ -3352,7 +3364,7 @@ App.prototype.fileCreated = function(file, libs, replace, done)
 				fn2();
 			}
 		});
-		
+
 		// Updates data in memory for local files and save is implicit
 		// via start of realtime for DriveFiles
 		if (file.constructor == LocalFile || file.constructor == DriveFile)

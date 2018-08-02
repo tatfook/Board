@@ -7,7 +7,7 @@
 KeepworkClient = function(editorUi)
 {
 	this.editorUi = editorUi
-	// DrawioClient.call(this, editorUi, 'ghauth');
+	DrawioClient.call(this, editorUi, 'ghauth');
 
 	var cookie = document.cookie.split(";")
 
@@ -24,6 +24,9 @@ KeepworkClient = function(editorUi)
 
 	this.getUserInfo()
 };
+
+// Extends DrawioClient
+mxUtils.extend(KeepworkClient, DrawioClient);
 
 KeepworkClient.prototype.getKeepworkBaseUrl = function () {
 	let hostname = window.location.hostname;
@@ -143,10 +146,19 @@ KeepworkClient.prototype.write = function(path, content, callback) {
 		})
 	}
 
-	upload(function() { update(callback) })
+	this.get(
+		url + '?&ref=master',
+		{},
+		function(response) {
+      update(callback)
+		},
+		function() {
+			upload(function() { update(callback)} )
+		}
+	)
 }
 
-KeepworkClient.prototype.get = function(url, params, callback) {
+KeepworkClient.prototype.get = function(url, params, success, error) {
 	var self = this
 
 	$.ajax({
@@ -155,8 +167,13 @@ KeepworkClient.prototype.get = function(url, params, callback) {
 		data: params || {},
 		url: url,
 		success: function(response) {
-			if(typeof callback === 'function') {
-				callback(response)
+			if(typeof success === 'function') {
+				success(response)
+			}
+		},
+		error: function() {
+			if(typeof error === 'function') {
+				error()
 			}
 		}
 	})
@@ -246,4 +263,11 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 			}
 		})
 	});
+};
+
+KeepworkClient.prototype.insertFile = function(title, data, success) {
+	this.save(title, data, mxUtils.bind(this, function()
+	{
+		success(new KeepworkFile(this.editorUi, data, title));
+	}));
 };
