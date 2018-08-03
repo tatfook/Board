@@ -3108,7 +3108,11 @@ App.prototype.getPeerForMode = function(mode)
 	else if (mode == App.MODE_TRELLO)
 	{
 		return this.trello;
-	} 
+	}
+	else if (mode == App.MODE_KEEPWORK)
+	{
+		return this.keepwork;
+	}
 	else
 	{
 		return null;
@@ -3606,6 +3610,10 @@ App.prototype.loadFile = function(id, sameWindow, file, success)
 				{
 					peer = this.trello;
 				}
+				else if (id.charAt(0) == 'K')
+				{
+					peer = this.keepwork;
+				}
 				
 				if (peer == null)
 				{
@@ -3657,7 +3665,7 @@ App.prototype.loadFile = function(id, sameWindow, file, success)
 	});
 	
 	var currentFile = this.getCurrentFile();
-	
+
 	var fn = mxUtils.bind(this, function()
 	{
 		if (currentFile == null || !currentFile.isModified())

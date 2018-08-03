@@ -6,7 +6,6 @@
 
 KeepworkClient = function(editorUi)
 {
-	this.editorUi = editorUi
 	DrawioClient.call(this, editorUi, 'ghauth');
 
 	var cookie = document.cookie.split(";")
@@ -179,53 +178,76 @@ KeepworkClient.prototype.get = function(url, params, success, error) {
 	})
 }
 
-KeepworkClient.prototype.read = function() {
-	var self = this;
+KeepworkClient.prototype.getXmlUrl = function() {
 	var url = '';
 
-	if (urlParams && urlParams['initxml']) {
+	if (window.urlParams && window.urlParams['initxml']) {
 		url = urlParams['initxml'];
 		urlParams['initxml'] = null;
+		window.keepworkSaveUrl.xmlUrl = url;
+
+		return url;
 	}
 
 	if(window.keepworkSaveUrl && window.keepworkSaveUrl.xmlUrl) {
 		url = window.keepworkSaveUrl.xmlUrl;
+
+		return url;
 	}
+}
 
-	if (url) {
-		var lastDotIndex = url.lastIndexOf('.');
-		var lastSlashIndex = url.lastIndexOf('/');
+KeepworkClient.prototype.getFilenameByUrl = function(url) {
+	var url = url || this.getXmlUrl();
 
-		var filename = url.substring(lastSlashIndex + 1, lastDotIndex);
+	var lastDotIndex = url.lastIndexOf('.');
+	var lastSlashIndex = url.lastIndexOf('/');
 
-		filename = filename ? decodeURIComponent(filename) : '';
+	var filename = url.substring(lastSlashIndex + 1, lastDotIndex);
 
-		this.get(url + '?bust' + Date.now(), null, function(data){
-			self.editorUi.setCurrentFile(null);
-			self.editorUi.openLocalFile(data, filename, 'keepwork');
-		})
+	filename = filename ? decodeURIComponent(filename) : '';
+
+	return filename;
+}
+
+KeepworkClient.prototype.getFile = function(id, callback) {
+	var self = this;
+	var url = self.getXmlUrl();
+
+	this.get(url + '?bust' + Date.now(), null, function(data){
+		if (typeof callback === 'function') {
+			callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+		}
+	})
+}
+
+KeepworkClient.prototype.pickFile = function()
+{
+	var self = this
+
+	if (this.getXmlUrl()) {
+		self.ui.loadFile('K')
 	} else {
 		setTimeout(function() {
-			self.editorUi.setCurrentFile(null);
+			self.ui.setCurrentFile(null);
 			self.create();
 		}, 0)
 	}
-}
+};
 
 KeepworkClient.prototype.create = function() {
 	var self = this;
 
-	self.editorUi.mode = App.MODE_KEEPWORK;
+	self.ui.mode = App.MODE_KEEPWORK;
 
-	var compact = self.editorUi.isOffline();
-	var dlg = new NewDialog(self.editorUi, compact);
+	var compact = self.ui.isOffline();
+	var dlg = new NewDialog(self.ui, compact);
 
-	self.editorUi.showDialog(dlg.container, (compact) ? 350 : 620, (compact) ? 70 : 440, true, true, function(cancel)
+	self.ui.showDialog(dlg.container, (compact) ? 350 : 620, (compact) ? 70 : 440, true, true, function(cancel)
 	{
-		if (cancel && self.editorUi.getCurrentFile() == null)
+		if (cancel && self.ui.getCurrentFile() == null)
 		{
-			// self.editorUi.showSplash();
-			self.editorUi.openLocalFile(self.editorUi.emptyDiagramXml, self.editorUi.defaultFilename, 'keepwork');
+			// self.ui.showSplash();
+			self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename, 'keepwork');
 		}
 	});
 	
@@ -234,7 +256,7 @@ KeepworkClient.prototype.create = function() {
 
 KeepworkClient.prototype.save = function(title, data, callback) {
 	var xmlContent = data;
-	var svgRoot = this.editorUi.editor.graph.getSvg();
+	var svgRoot = this.ui.editor.graph.getSvg();
 	var svgContent = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' + mxUtils.getXml(svgRoot);
 
 	var self = this;
@@ -268,6 +290,6 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 KeepworkClient.prototype.insertFile = function(title, data, success) {
 	this.save(title, data, mxUtils.bind(this, function()
 	{
-		success(new KeepworkFile(this.editorUi, data, title));
+		success(new KeepworkFile(this.ui, data, title));
 	}));
 };
