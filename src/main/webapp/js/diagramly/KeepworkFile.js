@@ -41,7 +41,7 @@ KeepworkFile.prototype.isAutosave = function()
  */
 KeepworkFile.prototype.isAutosaveOptional = function()
 {
-	return true;
+	return false;
 };
 
 /**

@@ -213,18 +213,37 @@ KeepworkClient.prototype.getFile = function(id, callback) {
 	var self = this;
 	var url = self.getXmlUrl();
 
-	this.get(url + '?bust' + Date.now(), null, function(data){
-		if (typeof callback === 'function') {
-			callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+	if (url) {
+		this.get(url + '?bust' + Date.now(), null, function(data){
+			if (typeof callback === 'function') {
+				callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+			}
+		});
+	} else {
+		var olddata = self.getOldData()
+
+		if(typeof callback === 'function') {
+			setTimeout(() => {
+				callback(new KeepworkFile(self.ui, olddata, 'old-' + Date.now()))
+			}, 0);
 		}
-	})
+	}
+}
+
+KeepworkClient.prototype.getOldData = function() {
+	var data =  window.boardOldData || '';
+	data = data.replace('<diagram version="0.0.1">', '');
+	data = data.replace('</diagram>', '');
+	data = this.ui.editor.graph.decompress(data);
+
+	return data;
 }
 
 KeepworkClient.prototype.pickFile = function()
 {
 	var self = this
 
-	if (this.getXmlUrl()) {
+	if (this.getXmlUrl() || this.getOldData()) {
 		self.ui.loadFile('K')
 	} else {
 		setTimeout(function() {

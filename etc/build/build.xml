@@ -336,6 +336,7 @@
 				<file name="GitHubLibrary.js" />
 				<file name="GitHubClient.js" />
 				<file name="KeepworkClient.js" />
+				<file name="KeepworkFile.js" />
 				<file name="TrelloFile.js" />
 				<file name="TrelloLibrary.js" />
 				<file name="TrelloClient.js" />
