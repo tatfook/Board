@@ -1282,7 +1282,7 @@
 		var d = 50;
 		var dt = 'ms microsoft cloud enterprise color ';
 		var sb = this;
-		var s = 'aspect=fixed;html=1;perimeter=none;align=center;shadow=0;dashed=0;image;fontSize=12;image=img/lib/mscae/';
+		var s = 'aspect=fixed;html=1;perimeter=none;align=center;shadow=0;dashed=0;image;fontSize=12;image=' + IMG_LIB_PATH + '/mscae/';
 		var gn = 'mxgraph.mscae';
 
 		var fns =
@@ -1516,7 +1516,7 @@
 		var d = 50;
 		var dt = 'ms microsoft deprecated enterprise color ';
 		var sb = this;
-		var s = 'aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;fontSize=12;image=img/lib/mscae/dep/';
+		var s = 'aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;fontSize=12;image=' + IMG_LIB_PATH + '/mscae/dep/';
 		var gn = 'mxgraph.mscae';
 
 		var fns =

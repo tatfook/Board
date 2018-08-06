@@ -678,7 +678,7 @@
 			mxLog.textarea.value = '';
 		}
 
-		this.addSearchPalette(true);
+		this.addSearchPalette(false);
 		this.addGeneralPalette(true);
 		this.addMiscPalette(false);
 		this.addAdvancedPalette(false);

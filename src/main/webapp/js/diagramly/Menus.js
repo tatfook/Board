@@ -782,7 +782,7 @@
 					if (menubar != null)
 					{
 						var langMenu = this.get('language');
-						
+						langMenu = null;
 						if (langMenu != null)
 						{
 							var elt = menubar.addMenu('', langMenu.funct);

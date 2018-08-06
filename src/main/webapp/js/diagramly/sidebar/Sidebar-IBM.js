@@ -5,7 +5,7 @@
 		var d = 60;
 		var dt = 'ibm';
 		var sb = this;
-		var s = 'aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/ibm/';
+		var s = 'aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;image;image=' + IMG_LIB_PATH + '/ibm/';
 
 		// Adds IBM shapes
 		this.addIBMAnalyticsPalette(d, dt, sb, s);

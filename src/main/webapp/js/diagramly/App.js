@@ -838,6 +838,8 @@ App.prototype.init = function()
 		}))
 	}
 
+	this.gitHub = null;
+
 	/**
 	 * Lazy-loading for individual backends
 	 */
@@ -848,6 +850,8 @@ App.prototype.init = function()
 		 */
 		var initOneDriveClient = mxUtils.bind(this, function()
 		{
+			OneDrive = undefined;
+
 			if (typeof OneDrive !== 'undefined')
 			{
 				/**
@@ -883,6 +887,8 @@ App.prototype.init = function()
 		 */
 		var initTrelloClient = mxUtils.bind(this, function()
 		{
+			window.Trello = undefined;
+
 			if (typeof window.Trello !== 'undefined')
 			{
 				this.trello = new TrelloClient(this);
@@ -911,6 +917,9 @@ App.prototype.init = function()
 	 */
 	if (urlParams['embed'] != '1' || urlParams['gapi'] == '1')
 	{
+		gapi = undefined;
+		DrawGapiClientCallback = undefined;
+
 		var initDriveClient = mxUtils.bind(this, function()
 		{
 			/**
@@ -1007,6 +1016,8 @@ App.prototype.init = function()
 		 */
 		var initDropboxClient = mxUtils.bind(this, function()
 		{
+			Dropbox = undefined;
+
 			if (typeof Dropbox === 'function' && typeof Dropbox.choose !== 'undefined')
 			{
 				/**

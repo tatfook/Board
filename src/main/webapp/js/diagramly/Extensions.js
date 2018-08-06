@@ -1308,45 +1308,45 @@
 			'RackBridge' : s + 'rack.cisco.cisco_nexus_5548p_switch;labelPosition=left;align=right;spacingRight=15',
 			'RackTapeDrive' : s + 'rack.ibm.ibm_1754_local_console_manager;labelPosition=left;align=right;spacingRight=15',
 //Network
-			'Image_network_server' : 'image;image=img/lib/clip_art/computers/Server_Tower_128x128.png;flipH=1',
-			'Image_network_server_file' : 'image;image=img/lib/clip_art/computers/Server_128x128.png',
-			'Image_network_server_net' : 'image;image=img/lib/clip_art/networking/Print_Server_128x128.png',
-			'Image_network_server_net_large' : 'image;image=img/lib/clip_art/computers/Server_128x128.png',
-			'Image_network_raid' : 'image;image=img/lib/clip_art/computers/Server_Tower_128x128.png;flipH=1',
-			'Image_network_raid_large' : 'image;image=img/lib/clip_art/computers/Server_Tower_128x128.png;flipH=1',
-			'Image_network_rack_server' : 'image;image=img/lib/clip_art/computers/Server_Rack_128x128.png',
-			'Image_network_rack_tape' : 'image;image=img/lib/clip_art/computers/Server_Rack_Partial_128x128.png',
-			'Image_network_printer_small' : 'image;image=img/lib/clip_art/computers/Printer_128x128.png;flipH=1',
-			'Image_network_printer_large' : 'image;image=img/lib/clip_art/computers/Printer_128x128.png;flipH=1',
-			'Image_network_printer_multipurpose' : 'image;image=img/lib/clip_art/computers/Printer_Commercial_128x128.png;flipH=1',
-			'Image_network_copier_small' : 'image;image=img/lib/clip_art/computers/Printer_Commercial_128x128.png',
-			'Image_network_copier_large' : 'image;image=img/lib/clip_art/computers/Printer_Commercial_128x128.png',
+			'Image_network_server' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_Tower_128x128.png;flipH=1',
+			'Image_network_server_file' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_128x128.png',
+			'Image_network_server_net' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/Print_Server_128x128.png',
+			'Image_network_server_net_large' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_128x128.png',
+			'Image_network_raid' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_Tower_128x128.png;flipH=1',
+			'Image_network_raid_large' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_Tower_128x128.png;flipH=1',
+			'Image_network_rack_server' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_Rack_128x128.png',
+			'Image_network_rack_tape' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Server_Rack_Partial_128x128.png',
+			'Image_network_printer_small' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_128x128.png;flipH=1',
+			'Image_network_printer_large' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_128x128.png;flipH=1',
+			'Image_network_printer_multipurpose' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_Commercial_128x128.png;flipH=1',
+			'Image_network_copier_small' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_Commercial_128x128.png',
+			'Image_network_copier_large' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_Commercial_128x128.png',
 //			'Image_network_printer_largeformat' NA
-			'Image_network_router' : 'image;image=img/lib/clip_art/networking/Router_128x128.png',
-			'Image_network_router_wireless' : 'image;image=img/lib/clip_art/networking/Wireless_Router_128x128.png',
-			'Image_network_ups' : 'image;image=img/lib/clip_art/networking/UPS_128x128.png',
+			'Image_network_router' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/Router_128x128.png',
+			'Image_network_router_wireless' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/Wireless_Router_128x128.png',
+			'Image_network_ups' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/UPS_128x128.png',
 //Electronics
 //			'Image_electronics_speakers_2' NA
 //			'Image_electronics_scanner_slide' NA
 //			'Image_electronics_speakers_2_1' NA
 //			'Image_electronics_speakers_5_1' NA
-			'Image_electronics_lcd' : 'image;image=img/lib/clip_art/computers/Monitor_128x128.png',
-			'Image_electronics_pda' : 'image;image=img/lib/clip_art/telecommunication/Palm_Treo_128x128.png',
-			'Image_electronics_drive_cardreader' : 'image;image=img/lib/clip_art/finance/Credit_Card_128x128.png',
-			'Image_electronics_camcorder' : 'image;image=img/lib/clip_art/networking/Ip_Camera_128x128.png',
+			'Image_electronics_lcd' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Monitor_128x128.png',
+			'Image_electronics_pda' : 'image;image=' + IMG_LIB_PATH + '/clip_art/telecommunication/Palm_Treo_128x128.png',
+			'Image_electronics_drive_cardreader' : 'image;image=' + IMG_LIB_PATH + '/clip_art/finance/Credit_Card_128x128.png',
+			'Image_electronics_camcorder' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/Ip_Camera_128x128.png',
 //			'Image_electronics_headset' NA
 //			'Image_electronics_calculator_simple' NA
 //			'Image_electronics_scanner_flatbed' NA
-			'Image_electronics_printer_photo' : 'image;image=img/lib/clip_art/computers/Printer_128x128.png;flipH=1',
+			'Image_electronics_printer_photo' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Printer_128x128.png;flipH=1',
 //			'Image_electronics_scanner_photo' NA
 //			'Image_electronics_projector' NA
-			'Image_electronics_drive_firewire' : 'image;image=img/lib/clip_art/computers/Harddrive_128x128.png;flipH=1',
-			'Image_electronics_drive_usb' : 'image;image=img/lib/clip_art/computers/Harddrive_128x128.png;flipH=1',
-			'Image_electronics_modem_external' : 'image;image=img/lib/clip_art/networking/Modem_128x128.png;flipH=1',
+			'Image_electronics_drive_firewire' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Harddrive_128x128.png;flipH=1',
+			'Image_electronics_drive_usb' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Harddrive_128x128.png;flipH=1',
+			'Image_electronics_modem_external' : 'image;image=' + IMG_LIB_PATH + '/clip_art/networking/Modem_128x128.png;flipH=1',
 //			'Image_electronics_tv_tuner_external' NA
 //			'Image_electronics_mp3' NA
 //			'Image_electronics_sound_box' NA
-			'Image_electronics_lcd_wide' : 'image;image=img/lib/clip_art/computers/Monitor_128x128.png',
+			'Image_electronics_lcd_wide' : 'image;image=' + IMG_LIB_PATH + '/clip_art/computers/Monitor_128x128.png',
 //Audio Equipment
 //			'Image_audio_speakers_2' NA
 //			'Image_audio_speakers_2_1' NA
