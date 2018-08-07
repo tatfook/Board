@@ -265,8 +265,15 @@ KeepworkClient.prototype.create = function() {
 	{
 		if (cancel && self.ui.getCurrentFile() == null)
 		{
+			boardType.close();
 			// self.ui.showSplash();
-			self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename, 'keepwork');
+			// self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename);
+
+			var currentFile = self.ui.getCurrentFile()
+
+			if (currentFile) {
+				currentFile.close(true)
+			}
 		}
 	});
 	

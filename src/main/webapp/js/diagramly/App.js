@@ -814,8 +814,8 @@ App.prototype.init = function()
 	{
 		this.keepwork.addListener('userChanged', mxUtils.bind(this, function()
 		{
-			// this.updateUserElement();
-			// this.restoreLibraries();
+			this.updateUserElement();
+			this.restoreLibraries();
 		}))
 
 		this.fireEvent(new mxEventObject('clientLoaded', 'client', this.keepwork));
