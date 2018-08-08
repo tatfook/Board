@@ -917,11 +917,9 @@ App.prototype.init = function()
 	 */
 	if (urlParams['embed'] != '1' || urlParams['gapi'] == '1')
 	{
-		gapi = undefined;
-		DrawGapiClientCallback = undefined;
-
 		var initDriveClient = mxUtils.bind(this, function()
 		{
+			return;
 			/**
 			 * Creates google drive client if all required libraries are available.
 			 */

@@ -2480,7 +2480,7 @@
 		{
 			this.addMenuItems(menu, ((this.editorUi.format != null) ? ['formatPanel'] : []).
 				concat(['outline', 'layers', '-']));
-			this.addMenuItems(menu, ['-', 'search'], parent);
+			this.addMenuItems(menu, ['-'], parent); //, 'search'
 			
 			if (isLocalStorage || mxClient.IS_CHROMEAPP)
 			{
@@ -2526,7 +2526,7 @@
 				this.addMenuItems(menu, ['autosave'], parent);
 			}
 
-			this.addMenuItems(menu, ['-', 'createShape', 'editDiagram'], parent);
+			this.addMenuItems(menu, ['-', 'createShape'], parent); // , 'editDiagram'
 
 			menu.addSeparator(parent);
 			
