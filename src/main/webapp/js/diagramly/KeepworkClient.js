@@ -241,7 +241,7 @@ KeepworkClient.prototype.getOldData = function() {
 	data = data.replace('<diagram version="0.0.1">', '');
 	data = data.replace('</diagram>', '');
 	data = this.ui.editor.graph.decompress(data);
-	console.log(data)
+
 	return data;
 }
 
@@ -261,7 +261,7 @@ KeepworkClient.prototype.pickFile = function()
 
 			self.ui.fileLoaded(null);
 			self.create();
-		}, 100)
+		}, 200)
 	}
 };
 
