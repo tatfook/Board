@@ -1341,10 +1341,10 @@
 			action.setToggleAction(true);
 			action.setSelectedCallback(function() { return editorUi.scratchpad != null; });
 
-			editorUi.actions.addAction('plugins...', function()
-			{
-				editorUi.showDialog(new PluginsDialog(editorUi).container, 360, 170, true, false);
-			});
+			// editorUi.actions.addAction('plugins...', function()
+			// {
+			// 	editorUi.showDialog(new PluginsDialog(editorUi).container, 360, 170, true, false);
+			// });
 		}
 		
 		var action = editorUi.actions.addAction('search', function()

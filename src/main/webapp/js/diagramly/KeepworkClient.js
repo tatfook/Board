@@ -94,6 +94,20 @@ KeepworkClient.prototype.getDataSourceToken = function() {
 	return this.datasourceInfo && this.datasourceInfo.dataSourceToken || '';
 }
 
+KeepworkClient.prototype.getCurRawUrl = function() {
+	return this.getGitlabRawUrl() + '/' + this.getDataSourceUsername() + '/' + this.getProjectName() + '/raw/master/';
+}
+
+KeepworkClient.prototype.getUrlByTitle = function(title, suffix) {
+	if (!window.pagePath || !title || !suffix) {
+		return false;
+	}
+
+	var url = this.userinfo.username + '/board/' + window.pagePath + '/' + title + suffix;
+
+	return url;
+}
+
 KeepworkClient.prototype.write = function(path, content, callback) {
 	var url = this.getGitlabBaseUrl() + '/projects/' + this.getDataProjectId() + '/repository/files/' + path;
 	var self = this;
@@ -181,16 +195,8 @@ KeepworkClient.prototype.get = function(url, params, success, error) {
 KeepworkClient.prototype.getXmlUrl = function() {
 	var url = '';
 
-	if (window.urlParams && window.urlParams['initxml']) {
-		url = urlParams['initxml'];
-		urlParams['initxml'] = null;
-		window.keepworkSaveUrl.xmlUrl = url;
-
-		return url;
-	}
-
-	if(window.keepworkSaveUrl && window.keepworkSaveUrl.xmlUrl) {
-		url = window.keepworkSaveUrl.xmlUrl;
+	if(keepworkSaveUrl && keepworkSaveUrl.xmlUrl) {
+		url = keepworkSaveUrl.xmlUrl;
 
 		return url;
 	}
@@ -231,11 +237,11 @@ KeepworkClient.prototype.getFile = function(id, callback) {
 }
 
 KeepworkClient.prototype.getOldData = function() {
-	var data =  window.boardOldData || '';
+	var data =  boardOldData || '';
 	data = data.replace('<diagram version="0.0.1">', '');
 	data = data.replace('</diagram>', '');
 	data = this.ui.editor.graph.decompress(data);
-
+	console.log(data)
 	return data;
 }
 
@@ -243,13 +249,19 @@ KeepworkClient.prototype.pickFile = function()
 {
 	var self = this
 
-	if (this.getXmlUrl() || this.getOldData()) {
+	if (self.getXmlUrl() || self.getOldData()) {
 		self.ui.loadFile('K')
 	} else {
 		setTimeout(function() {
-			self.ui.setCurrentFile(null);
+			var file = self.ui.getCurrentFile();
+
+			if (file) {
+				file.close(true);
+			}
+
+			self.ui.fileLoaded(null);
 			self.create();
-		}, 0)
+		}, 100)
 	}
 };
 
@@ -269,14 +281,14 @@ KeepworkClient.prototype.create = function() {
 			// self.ui.showSplash();
 			// self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename);
 
-			var currentFile = self.ui.getCurrentFile()
+			var currentFile = self.ui.getCurrentFile();
 
 			if (currentFile) {
 				currentFile.close(true)
 			}
 		}
 	});
-	
+
 	dlg.init();
 }
 
@@ -287,8 +299,8 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 
 	var self = this;
 
-	var xmlUrl = self.userinfo.username + '/' + 'board/' + title + '/' + title + '.xml';
-	var svgUrl = self.userinfo.username + '/' + 'board/' + title + '/' + title + '.svg';
+	var xmlUrl = self.getUrlByTitle(title, '.xml');
+	var svgUrl = self.getUrlByTitle(title, '.svg');
 
 	function updateXml(callback) {
 		self.write(xmlUrl, xmlContent, callback);
@@ -300,11 +312,9 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 
 	updateXml(function(){
 		updateSvg(function(){
-			let url = self.getGitlabRawUrl() + '/' + self.getDataSourceUsername() + '/' + self.getProjectName() + '/raw/master/';
-
 			window.keepworkSaveUrl = {};
-			window.keepworkSaveUrl.xmlUrl = url + xmlUrl;
-			window.keepworkSaveUrl.svgUrl = url + svgUrl;
+			window.keepworkSaveUrl.xmlUrl = self.getCurRawUrl() + xmlUrl;
+			window.keepworkSaveUrl.svgUrl = self.getCurRawUrl() + svgUrl;
 			
 			if(typeof callback === 'function'){
 				callback();
@@ -313,9 +323,33 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 	});
 };
 
-KeepworkClient.prototype.insertFile = function(title, data, success) {
-	this.save(title, data, mxUtils.bind(this, function()
-	{
-		success(new KeepworkFile(this.ui, data, title));
-	}));
+KeepworkClient.prototype.insertFile = function(title, data, success, error) {
+	var self = this;
+	var url = self.getCurRawUrl() + self.getUrlByTitle(title, '.xml');
+
+	function save() {
+		self.save(title, data, mxUtils.bind(self, function()
+		{
+			if (typeof success === 'function') {
+				success(new KeepworkFile(this.ui, data, title));
+			}
+		}));
+	}
+
+	self.get(
+		url + '?&ref=master',
+		{},
+		function() {
+				self.ui.confirm(mxResources.get('fileExistSave'), function() {
+					save();
+				}, function() {
+					if (typeof error === 'function') {
+						error();
+					}
+				});
+		},
+		function() {
+			save();
+		}
+	)
 };

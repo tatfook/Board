@@ -3212,7 +3212,7 @@ App.prototype.createFile = function(title, data, libs, mode, done, replace, fold
 			{
 				complete();
 				this.fileCreated(file, libs, replace, done);
-			}));
+			}), error);
 		}
 		else if (mode == App.MODE_BROWSER)
 		{
