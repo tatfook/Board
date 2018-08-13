@@ -9,6 +9,9 @@ KeepworkFile = function(ui, data, title) {
 
   this.title = title
   this.data = data
+
+  this.saveInterval = 30000
+  this.inactiveSave()
 }
 
 //Extends mxEventSource
@@ -29,7 +32,7 @@ KeepworkFile.prototype.getData = function() {
 }
 
 KeepworkFile.prototype.isAutosave = function() {
-  return true
+  return false
 }
 
 /**
@@ -164,6 +167,26 @@ KeepworkFile.prototype.saveFile = function(title, revision, success, error) {
   }
 }
 
+KeepworkFile.prototype.inactiveSave = function() {
+  var self = this
+
+  function inactiveSave() {
+    let currentFile = self.ui.getCurrentFile()
+
+    if (!currentFile.changeListener) {
+      return false
+    }
+
+    if (!currentFile.saving) {
+      self.ui.actions.get(self.ui.mode == null ? 'saveAs' : 'save').funct()
+    }
+
+    setTimeout(inactiveSave, self.saveInterval)
+  }
+
+  setTimeout(inactiveSave, self.saveInterval)
+}
+
 KeepworkFile.prototype.isRenamable = function() {
   return true
 }
@@ -173,8 +196,8 @@ KeepworkFile.prototype.rename = function(title, success, error) {
     title,
     this.getData(),
     mxUtils.bind(this, function() {
-			this.title = title;
-      this.contentChanged();
+      this.title = title
+      this.contentChanged()
 
       if (success != null) {
         success()
