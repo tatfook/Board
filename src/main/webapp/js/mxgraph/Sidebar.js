@@ -2089,6 +2089,10 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 							graph.fireEvent(new mxEventObject('cellsInserted', 'cells', select));
 						}
 					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
 					finally
 					{
 						graph.model.endUpdate();
@@ -2243,6 +2247,10 @@ Sidebar.prototype.dropAndConnect = function(source, targets, direction, dropCell
 			}
 			
 			graph.fireEvent(new mxEventObject('cellsInserted', 'cells', targets));
+		}
+		catch (e)
+		{
+			this.editorUi.handleError(e);
 		}
 		finally
 		{
@@ -3145,6 +3153,16 @@ Sidebar.prototype.itemClicked = function(cells, ds, evt, elt)
 	else
 	{
 		var pt = graph.getFreeInsertPoint();
+		
+		if (mxEvent.isShiftDown(evt))
+		{
+			var bounds = graph.getGraphBounds();
+			var tr = graph.view.translate;
+			var s = graph.view.scale;
+			pt.x = bounds.x / s - tr.x + bounds.width / s + graph.gridSize;
+			pt.y = bounds.y / s - tr.y;
+		}
+		
 		ds.drop(graph, evt, null, pt.x, pt.y, true);
 		
 		if (this.editorUi.hoverIcons != null && (mxEvent.isTouchEvent(evt) || mxEvent.isPenEvent(evt)))

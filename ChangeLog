@@ -1,3 +1,51 @@
+01-AUG-2018: 9.0.2
+
+- Adds missing rounded format option
+- Fixes tolerance for connect arrows
+- Uses mxGraph 3.9.9 beta 7
+- Fixes docker build
+
+31-JUL-2018: 9.0.1
+
+- Fixes insert to GitHub with URL parameter
+
+28-JUL-2018: 9.0.0
+
+- Disables persisted default styles
+- Fixes inserting files to GitHub
+
+26-JUL-2018: 8.9.9
+
+- Adds support for hierarchies in CSV import
+- Updates colors for Atlas theme
+- Uses mxGraph 3.9.9 beta 6
+
+23-JUL-2018: 8.9.8
+
+- Changes PlantUML autosize parameter to default to true
+- Improves error handling, imports
+- Uses mxGraph 3.9.9 beta 5
+
+18-JUL-2018: 8.9.7
+
+- Uses new PlantUML version
+
+18-JUL-2018: 8.9.6
+
+- Fixes vertical offset for text editing with small fonts
+- Fixes repaint of placeholders in text for custom shapes
+- Fixes lost cursor after certain keyboard shortcuts
+- Fixes clipboard state after cut keyboard shortcut
+- Fixes minor issues for Confluence Cloud
+- Adds draft state for Trello attachments
+- Uses mxGraph 3.9.9 beta 4
+
+13-JUL-2018: 8.9.5
+
+- Fixes clipping for MathJax print preview in Safari
+- Uses mxGraph 3.9.9 beta 3
+- Fixes minor memory leak
+
 11-JUL-2018: 8.9.4
 
 - Removes foreignObjects for MathJax

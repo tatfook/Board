@@ -23,7 +23,7 @@ EditorUi.initMinimalTheme = function()
            'div.geDialog { border-radius: 5px; }' +
            'html body div.geDialog button.geBigButton { color: #fff !important; }' +
            '.mxWindow button, .geDialog select, .mxWindow select { display:inline-block; }' +
-           '.mxWindow .geColorBtn, .geDialog .geColorBtn { background: none !important; }' +
+           'html body .mxWindow .geColorBtn, html body .geDialog .geColorBtn { background: none; }' +
            'html body div.diagramContainer button, html body .mxWindow button, html body .geDialog button { min-width: 0px; border-radius: 5px; color: #353535 !important; border-color: rgb(216, 216, 216); }' +
            'div.diagramContainer button.geBtn, .mxWindow button.geBtn, .geDialog button.geBtn { min-width:72px; font-weight: 600; background: none; }' +
            'div.diagramContainer button.geBtn:hover, .mxWindow button.geBtn:hover, .geDialog button.geBtn:hover { box-shadow: none; border-color: rgb(216, 216, 216); }' +
@@ -116,7 +116,7 @@ EditorUi.initMinimalTheme = function()
 	    {
 	        ui.formatWindow = new WrapperWindow(ui, mxResources.get('format'),
 	           Math.max(20, ui.diagramContainer.clientWidth - 240 - 12), 56,
-	           240, Math.min(546, graph.container.clientHeight - 10), function(container)
+	           240, Math.min(550, graph.container.clientHeight - 10), function(container)
 	        {
 	            var format = ui.createFormat(container);
 	            format.init();
@@ -516,7 +516,7 @@ EditorUi.initMinimalTheme = function()
         
         if (graph.getSelectionCount() == 1)
         {
-            this.addMenuItems(menu, ['-', 'editTooltip', 'editStyle', '-'], null, evt);
+            this.addMenuItems(menu, ['editTooltip', '-', 'editStyle', 'editGeometry', '-'], null, evt);
 
             if (graph.isCellFoldable(graph.getSelectionCell()))
             {
@@ -755,14 +755,7 @@ EditorUi.initMinimalTheme = function()
 				menu.addSeparator(parent);
 			}
 			
-			ui.menus.addMenuItems(menu, ['-', 'outline', 'layers', '-', 'find'], parent);
-			
-			var item = this.addMenuItem(menu, 'tags', parent);
-			
-			if (!ui.isOffline() || mxClient.IS_CHROMEAPP)
-			{
-				ui.menus.addLinkToItem(item, 'https://desk.draw.io/support/solutions/articles/16000046966');
-			}
+			ui.menus.addMenuItems(menu, ['-', 'outline', 'layers', '-', 'find', 'tags'], parent);
 			
 			// Cannot use print in standalone mode on iOS as we cannot open new windows
 			if (!mxClient.IS_IOS || !navigator.standalone)
@@ -860,12 +853,7 @@ EditorUi.initMinimalTheme = function()
 			if (!ui.isOfflineApp() && urlParams['embed'] != '1' && isLocalStorage)
 			{
 				menu.addSeparator(parent);
-	        	var item = ui.menus.addMenuItem(menu, 'plugins', parent);
-				
-				if (!ui.isOffline())
-				{
-					ui.menus.addLinkToItem(item, 'https://desk.draw.io/support/solutions/articles/16000056430');
-				}
+	        	ui.menus.addMenuItem(menu, 'plugins', parent);
 			}
         })));
         
@@ -881,7 +869,16 @@ EditorUi.initMinimalTheme = function()
         {
             ui.menus.addMenuItems(menu, ['insertRectangle', 'insertEllipse', 'insertRhombus', '-', 'insertText',
                                          'insertLink', '-', 'insertImage'], parent);
-            ui.menus.addSubmenu('importFrom', menu, parent);
+            
+            if (mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
+            {
+            	ui.menus.addMenuItems(menu, ['import'], parent);
+            }
+            else
+            {
+            	ui.menus.addSubmenu('importFrom', menu, parent);
+            }
+            
             menu.addSeparator(parent);
             ui.menus.addSubmenu('insertLayout', menu, parent);
             ui.menus.addSubmenu('insertAdvanced', menu, parent);

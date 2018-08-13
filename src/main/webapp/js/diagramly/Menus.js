@@ -459,7 +459,7 @@
 			if (vertices.length > 0)
 			{
 				var dlg = new EditGeometryDialog(editorUi, vertices);
-				editorUi.showDialog(dlg.container, 180, 180, true, true);
+				editorUi.showDialog(dlg.container, 200, 250, true, true);
 				dlg.init();
 			}
 		}, null, null, Editor.ctrlKey + '+Shift+M');
@@ -2466,12 +2466,13 @@
 			}));
 		}
 			
-		// Overrides edit menu to add find
+		// Overrides edit menu to add find and editGeometry
 		this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
 		{
 			this.addMenuItems(menu, ['undo', 'redo', '-', 'cut', 'copy', 'paste', 'delete', '-', 'duplicate', '-',
 									 'find', '-',
-			                         'editData', 'editTooltip', 'editStyle', '-', 'edit', '-', 'editLink', 'openLink', '-',
+			                         'editData', 'editTooltip', '-', 'editStyle', 'editGeometry', '-',
+			                         'edit', '-', 'editLink', 'openLink', '-',
 			                         'selectVertices', 'selectEdges', 'selectAll', 'selectNone', '-', 'lockUnlock']);
 		})));
 		
@@ -2537,22 +2538,11 @@
 
 			if (!editorUi.isOfflineApp() && urlParams['embed'] != '1' && isLocalStorage)
 			{
-				var item = this.addMenuItem(menu, 'plugins', parent);
-				
-				if (!editorUi.isOffline())
-				{
-					this.addLinkToItem(item, 'https://desk.draw.io/support/solutions/articles/16000056430');
-				}
+				this.addMenuItem(menu, 'plugins', parent);
 			}
 
 			menu.addSeparator(parent);
-			
-			var item = this.addMenuItem(menu, 'tags', parent);
-			
-			if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
-			{
-				this.addLinkToItem(item, 'https://desk.draw.io/support/solutions/articles/16000046966');
-			}
+			this.addMenuItem(menu, 'tags', parent);
 		})));
 
 		this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
