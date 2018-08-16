@@ -11,7 +11,6 @@ KeepworkFile = function(ui, data, title) {
   this.data = data
 
   this.saveInterval = 30000
-  this.inactiveSave()
 }
 
 //Extends mxEventSource
@@ -61,6 +60,66 @@ KeepworkFile.prototype.getTitle = function() {
 KeepworkFile.prototype.isRenamable = function() {
   return true
 }
+
+/**
+ * Returns the location as a new object.
+ * @type mx.Point
+ */
+KeepworkFile.prototype.open = function()
+{
+	this.ui.setFileData(this.getData());
+	
+	this.changeListener = mxUtils.bind(this, function(sender, eventObject)
+	{
+    this.inactiveSave();
+		var edit = (eventObject != null) ? eventObject.getProperty('edit') : null;
+		
+		if (this.changeListenerEnabled && this.isEditable() &&
+			(edit == null || !edit.ignoreEdit))
+		{
+			this.setModified(true);
+
+			if (this.isAutosave())
+			{
+				this.ui.editor.setStatus(mxUtils.htmlEntities(mxResources.get('saving')) + '...');
+				
+				this.autosave(this.autosaveDelay, this.maxAutosaveDelay, mxUtils.bind(this, function(resp)
+				{
+					// Does not update status if another autosave was scheduled
+					if (this.autosaveThread == null && this.ui.getCurrentFile() == this && !this.isModified())
+					{
+						this.ui.editor.setStatus(mxUtils.htmlEntities(mxResources.get('allChangesSaved')));
+					}
+				}), mxUtils.bind(this, function(resp)
+				{
+					if (this.ui.getCurrentFile() == this)
+					{
+						this.addUnsavedStatus(resp);
+					}
+				}));
+			}
+			else
+			{
+				this.addUnsavedStatus();
+			}
+		}
+	});
+	
+	this.ui.editor.graph.model.addListener(mxEvent.CHANGE, this.changeListener);
+
+	// Some options trigger autosave
+	this.ui.editor.graph.addListener('gridSizeChanged', this.changeListener);
+	this.ui.editor.graph.addListener('shadowVisibleChanged', this.changeListener);
+	this.ui.addListener('pageFormatChanged', this.changeListener);
+	this.ui.addListener('pageScaleChanged', this.changeListener);
+	this.ui.addListener('backgroundColorChanged', this.changeListener);
+	this.ui.addListener('backgroundImageChanged', this.changeListener);
+	this.ui.addListener('foldingEnabledChanged', this.changeListener);
+	this.ui.addListener('mathEnabledChanged', this.changeListener);
+	this.ui.addListener('gridEnabledChanged', this.changeListener);
+	this.ui.addListener('guidesEnabledChanged', this.changeListener);
+	this.ui.addListener('pageViewChanged', this.changeListener);
+};
 
 /**
  * Translates this point by the given vector.
@@ -177,14 +236,16 @@ KeepworkFile.prototype.inactiveSave = function() {
       return false
     }
 
-    if (!currentFile.saving) {
+    if (self.modified && !currentFile.savingFile) {
       self.ui.actions.get(self.ui.mode == null ? 'saveAs' : 'save').funct()
     }
-
-    setTimeout(inactiveSave, self.saveInterval)
   }
 
-  setTimeout(inactiveSave, self.saveInterval)
+  if (self.saveTimeout) {
+    clearTimeout(self.saveTimeout);
+  }
+
+  self.saveTimeout = setTimeout(inactiveSave, self.saveInterval)
 }
 
 KeepworkFile.prototype.isRenamable = function() {
