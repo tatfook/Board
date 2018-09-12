@@ -259,7 +259,7 @@ KeepworkClient.prototype.pickFile = function()
 				file.close(true);
 			}
 
-			self.ui.fileLoaded(null);
+			// self.ui.fileLoaded(null);
 			self.create();
 		}, 200)
 	}
@@ -275,7 +275,7 @@ KeepworkClient.prototype.create = function() {
 
 	self.ui.showDialog(dlg.container, (compact) ? 350 : 620, (compact) ? 70 : 440, true, true, function(cancel)
 	{
-		if (cancel && self.ui.getCurrentFile() == null)
+		if (cancel) // && self.ui.getCurrentFile() == null
 		{
 			boardType.close();
 			// self.ui.showSplash();
