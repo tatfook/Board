@@ -4,352 +4,356 @@
  * date:2018.7.17
  */
 
-KeepworkClient = function(editorUi)
-{
-	DrawioClient.call(this, editorUi, 'ghauth');
+KeepworkClient = function(editorUi) {
+  DrawioClient.call(this, editorUi, 'ghauth')
 
-	var cookie = document.cookie.split(";")
+	this.requestTimeout = 10000
+	this.userinfo = {}
+	this.token = ''
 
-	for (var item in cookie) {
-		var currentItem = mxUtils.trim(cookie[item])
+  var cookie = document.cookie.split(';')
 
-		if(currentItem.substring(0, 6) == "token=") {
-			this.token = currentItem.substring(6)
-		}
-	}
+  for (var item in cookie) {
+    var currentItem = mxUtils.trim(cookie[item])
 
-	this.requestTimeout = 10000;
-	this.branch = 'master';
+    if (currentItem.substring(0, 6) == 'token=') {
+      this.token = currentItem.substring(6)
+    }
+  }
 
-	this.getUserInfo()
-};
+  this.getUserInfo()
+}
 
 // Extends DrawioClient
-mxUtils.extend(KeepworkClient, DrawioClient);
+mxUtils.extend(KeepworkClient, DrawioClient)
 
-KeepworkClient.prototype.getKeepworkBaseUrl = function () {
-	let hostname = window.location.hostname;
-	let url = '';
+KeepworkClient.prototype.getKeepworkApiBaseUrl = function() {
+  var hostname = window.location.hostname
+  var url = ''
 
-	if (hostname === 'localhost') {
-		url = 'https://stage.keepwork.com';
+  if (hostname === 'localhost' || hostname.match(/\d+.\d+.\d+.\d+/)) {
+    url = 'https://api-stage.keepwork.com'
+  }
+
+  if (hostname === 'keepwork.com') {
+    url = 'https://api.keepwork.com'
+  }
+
+  if (hostname === 'stage.keepwork.com') {
+    url = 'https://api-stage.keepwork.com'
+  }
+
+  if (hostname === 'release.keepwork.com') {
+    url = 'https://api-release.keepwork.com'
+  }
+
+	return url
+}
+
+KeepworkClient.prototype.getCoreserviceBaseUrl = function() {
+	return this.getKeepworkApiBaseUrl() + '/core/v0'
+}
+
+KeepworkClient.prototype.getGitlabBaseUrl = function () {
+	return this.getKeepworkApiBaseUrl() + '/git/v0'
+}
+
+KeepworkClient.prototype.getProjectPath = function() {
+	var url = (this.userinfo.username || '') + '/' + '__keepwork__'
+
+	return encodeURIComponent(url)
+}
+
+KeepworkClient.prototype.getHeader = function() {
+	return {
+		Authorization: 'Bearer ' + this.token || ''
 	}
-
-	if (hostname === 'keepwork.com') {
-		url = 'https://keepwork.com';
-	}
-
-	if (hostname === 'stage.keepwork.com') {
-		url = 'https://stage.keepwork.com';
-	}
-
-	if (hostname === 'release.keepwork.com') {
-		url = 'https://release.keepwork.com';
-	}
-
-	return url + '/api/wiki/models/'
 }
 
-KeepworkClient.prototype.getUserInfo = function () {
-	var url = this.getKeepworkBaseUrl() + 'user/getProfile'
-	var self = this
+KeepworkClient.prototype.getUserInfo = function() {
+  var url = this.getCoreserviceBaseUrl() + '/users/profile'
+  var self = this
 
-	$.ajax({
-		type: 'GET',
-		timeout: this.requestTimeout, // 超时时间 10 秒
-		headers: {
-				'Authorization': 'Bearer ' + this.token
-		},
-		url: url,
-		success: function(response) {
-			if (response && response.data) {
-				self.userinfo = response.data;
-				self.datasourceInfo = response.data.defaultSiteDataSource;
-			}
-		}
-	})
-};
-
-KeepworkClient.prototype.getGitlabBaseUrl = function() {
-	return this.datasourceInfo && this.datasourceInfo.apiBaseUrl.replace('http://', 'https://') || '';
-}
-
-KeepworkClient.prototype.getGitlabRawUrl = function() {
-	return this.datasourceInfo && this.datasourceInfo.rawBaseUrl.replace('http://', 'https://') || '';
-}
-
-KeepworkClient.prototype.getDataProjectId = function() {
-	return this.datasourceInfo && this.datasourceInfo.projectId || '';
-}
-
-KeepworkClient.prototype.getDataSourceUsername = function() {
-	return this.datasourceInfo && this.datasourceInfo.dataSourceUsername || '';
-}
-
-KeepworkClient.prototype.getProjectName = function() {
-	return this.datasourceInfo && this.datasourceInfo.projectName || '';
-}
-
-KeepworkClient.prototype.getDataSourceToken = function() {
-	return this.datasourceInfo && this.datasourceInfo.dataSourceToken || '';
-}
-
-KeepworkClient.prototype.getCurRawUrl = function() {
-	return this.getGitlabRawUrl() + '/' + this.getDataSourceUsername() + '/' + this.getProjectName() + '/raw/master/';
+  $.ajax({
+    type: 'GET',
+    timeout: self.requestTimeout, // 超时时间 10 秒
+    headers: self.getHeader(),
+    url: url,
+    success: function(response) {
+      if (typeof response === 'object') {
+        self.userinfo = response
+      }
+    }
+  })
 }
 
 KeepworkClient.prototype.getUrlByTitle = function(title, suffix) {
-	if (!window.pagePath || !title || !suffix) {
-		return false;
-	}
+  if (!window.pagePath || !title || !suffix) {
+    return false
+  }
 
-	var url = this.userinfo.username + '/board/' + window.pagePath + '/' + title + suffix;
+  var url = this.userinfo.username + '/board/' + window.pagePath + '/' + title + suffix
 
-	return url;
+  return encodeURIComponent(url)
 }
 
 KeepworkClient.prototype.write = function(path, content, callback) {
-	var url = this.getGitlabBaseUrl() + '/projects/' + this.getDataProjectId() + '/repository/files/' + path;
-	var self = this;
+  var url = this.getGitlabBaseUrl() + '/projects/' + this.getProjectPath() + '/files/' + path
+  var self = this
 
-	function upload(callback) {
-		$.ajax({
-			type: 'POST',
-			timeout: self.requestTimeout,
-			headers: {
-				'PRIVATE-TOKEN': self.getDataSourceToken()
-			},
-			url: url,
-			data: {
-				branch: self.branch,
-				commit_message: 'sync',
-				content: content
-			},
-			success: function(response) {
-				if(typeof callback === 'function') {
-					callback(response);
-				}
-			},
-			error: function() {
-				if(typeof callback === 'function') {
-					callback();
-				}
-			}
-		})
-	}
+  function upload(callback) {
+    $.ajax({
+      type: 'POST',
+      timeout: self.requestTimeout,
+      headers: self.getHeader(),
+      url: url,
+      data: {
+        content: content
+      },
+      success: function(response) {
+        if (typeof callback === 'function') {
+          callback(response, url)
+        }
+      },
+      error: function() {
+        if (typeof callback === 'function') {
+          callback()
+        }
+      }
+    })
+  }
 
-	function update(callback) {
-		$.ajax({
-			type: 'PUT',
-			timeout: self.requestTimeout,
-			headers: {
-				'PRIVATE-TOKEN': self.getDataSourceToken()
-			},
-			url: url,
-			data: {
-				branch: self.branch,
-				commit_message: 'sync',
-				content: content
-			},
-			success: function(response) {
-				if(typeof callback === 'function') {
-					callback(response);
-				}
-			}
-		})
-	}
+  function update(callback) {
+    $.ajax({
+      type: 'PUT',
+      timeout: self.requestTimeout,
+      headers: self.getHeader(),
+      url: url,
+      data: {
+        content: content
+      },
+      success: function(response) {
+        if (typeof callback === 'function') {
+          callback(response, url)
+        }
+      }
+    })
+  }
 
-	this.get(
-		url + '?&ref=master',
-		{},
-		function(response) {
+  this.get(
+    url,
+    {},
+    function(response) {
       update(callback)
-		},
-		function() {
-			upload(function() { update(callback)} )
-		}
-	)
+    },
+    function() {
+      upload(function() {
+        update(callback)
+      })
+    }
+  )
 }
 
 KeepworkClient.prototype.get = function(url, params, success, error) {
-	var self = this
+  var self = this
 
-	$.ajax({
-		type: 'GET',
-		timeout: self.requestTimeout,
-		data: params || {},
-		url: url,
-		success: function(response) {
-			if(typeof success === 'function') {
-				success(response)
-			}
-		},
-		error: function() {
-			if(typeof error === 'function') {
-				error()
-			}
-		}
-	})
+  $.ajax({
+    type: 'GET',
+    timeout: self.requestTimeout,
+    data: params || {},
+    url: url,
+    success: function(response) {
+      if (typeof success === 'function') {
+        success(response)
+      }
+    },
+    error: function() {
+      if (typeof error === 'function') {
+        error()
+      }
+    }
+  })
 }
 
 KeepworkClient.prototype.getXmlUrl = function() {
-	var url = '';
+  var url = ''
 
-	if(keepworkSaveUrl && keepworkSaveUrl.xmlUrl) {
-		url = keepworkSaveUrl.xmlUrl;
+  if (keepworkSaveUrl && keepworkSaveUrl.xmlUrl) {
+    url = keepworkSaveUrl.xmlUrl
 
-		return url;
-	}
+    return url
+  }
 }
 
 KeepworkClient.prototype.getFilenameByUrl = function(url) {
-	var url = url || this.getXmlUrl();
+  var url = url || decodeURIComponent(this.getXmlUrl())
 
-	var lastDotIndex = url.lastIndexOf('.');
-	var lastSlashIndex = url.lastIndexOf('/');
+  var lastDotIndex = url.lastIndexOf('.')
+  var lastSlashIndex = url.lastIndexOf('/')
 
-	var filename = url.substring(lastSlashIndex + 1, lastDotIndex);
+  var filename = url.substring(lastSlashIndex + 1, lastDotIndex)
 
-	filename = filename ? decodeURIComponent(filename) : '';
+  filename = filename ? decodeURIComponent(filename) : ''
 
-	return filename;
+  return filename
 }
 
 KeepworkClient.prototype.getFile = function(id, callback) {
-	var self = this;
-	var url = self.getXmlUrl();
+  var self = this
+  var url = self.getXmlUrl()
 
-	if (url) {
-		this.get(url + '?bust' + Date.now(), null, function(data){
-			if (typeof callback === 'function') {
-				callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+  if (url) {
+    this.get(url + '?bust' + Date.now(), null, function(data) {
+			if (url.match('api-stage')) {
+				if (data && data.content && typeof callback === 'function') {
+					callback(new KeepworkFile(self.ui, data.content, self.getFilenameByUrl()))
+				}
+			} else {
+				if (data && typeof callback === 'function') {
+					callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+				}
 			}
-		});
-	} else {
-		var olddata = self.getOldData()
+    })
+  } else {
+    var olddata = self.getOldData()
 
-		if(typeof callback === 'function') {
-			setTimeout(() => {
-				callback(new KeepworkFile(self.ui, olddata, 'old-' + Date.now()))
-			}, 0);
-		}
-	}
+    if (typeof callback === 'function') {
+      setTimeout(() => {
+        callback(new KeepworkFile(self.ui, olddata, 'old-' + Date.now()))
+      }, 0)
+    }
+  }
 }
 
 KeepworkClient.prototype.getOldData = function() {
-	var data =  boardOldData || '';
-	data = data.replace('<diagram version="0.0.1">', '');
-	data = data.replace('</diagram>', '');
-	data = this.ui.editor.graph.decompress(data);
+  var data = boardOldData || ''
+  data = data.replace('<diagram version="0.0.1">', '')
+  data = data.replace('</diagram>', '')
+  data = this.ui.editor.graph.decompress(data)
 
-	return data;
+  return data
 }
 
-KeepworkClient.prototype.pickFile = function()
-{
-	var self = this
+KeepworkClient.prototype.pickFile = function() {
+  var self = this
 
-	if (self.getXmlUrl() || self.getOldData()) {
-		self.ui.loadFile('K')
-	} else {
-		setTimeout(function() {
-			var file = self.ui.getCurrentFile();
+  if (self.getXmlUrl() || self.getOldData()) {
+    self.ui.loadFile('K')
+  } else {
+    setTimeout(function() {
+      var file = self.ui.getCurrentFile()
 
-			if (file) {
-				file.close(true);
+      if (file) {
+        file.close(true)
 			}
 
-			// self.ui.fileLoaded(null);
-			self.create();
-		}, 200)
-	}
-};
+      self.create()
+    }, 200)
+  }
+}
 
 KeepworkClient.prototype.create = function() {
-	var self = this;
+  var self = this
 
-	self.ui.mode = App.MODE_KEEPWORK;
+  self.ui.mode = App.MODE_KEEPWORK
 
-	var compact = self.ui.isOffline();
-	var dlg = new NewDialog(self.ui, compact);
+  var compact = self.ui.isOffline()
+  var dlg = new NewDialog(self.ui, compact)
 
-	self.ui.showDialog(dlg.container, (compact) ? 350 : 620, (compact) ? 70 : 440, true, true, function(cancel)
-	{
-		if (cancel) // && self.ui.getCurrentFile() == null
-		{
-			boardType.close();
-			// self.ui.showSplash();
-			// self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename);
+  self.ui.showDialog(
+    dlg.container,
+    compact ? 350 : 620,
+    compact ? 70 : 440,
+    true,
+    true,
+    function(cancel) {
+      if (cancel) {
+        // && self.ui.getCurrentFile() == null
+        boardType.close()
+        // self.ui.showSplash();
+        // self.ui.openLocalFile(self.ui.emptyDiagramXml, self.ui.defaultFilename);
 
-			var currentFile = self.ui.getCurrentFile();
+        var currentFile = self.ui.getCurrentFile()
 
-			if (currentFile) {
-				currentFile.close(true)
-			}
-		}
-	});
+        if (currentFile) {
+          currentFile.close(true)
+        }
+      }
+    }
+  )
 
-	dlg.init();
+  dlg.init()
 }
 
 KeepworkClient.prototype.save = function(title, data, callback) {
-	var xmlContent = data;
-	var svgRoot = this.ui.editor.graph.getSvg();
-	var svgContent = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' + mxUtils.getXml(svgRoot);
+  var xmlContent = data
+  var svgRoot = this.ui.editor.graph.getSvg()
+  var svgContent =
+    '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n' +
+    mxUtils.getXml(svgRoot)
 
-	var self = this;
+  var self = this
 
-	var xmlUrl = self.getUrlByTitle(title, '.xml');
-	var svgUrl = self.getUrlByTitle(title, '.svg');
+  var xmlUrl = self.getUrlByTitle(title, '.xml')
+  var svgUrl = self.getUrlByTitle(title, '.svg')
 
-	function updateXml(callback) {
-		self.write(xmlUrl, xmlContent, callback);
-	}
+  function updateXml(callback) {
+    self.write(xmlUrl, xmlContent, callback)
+  }
 
-	function updateSvg(callback) {
-		self.write(svgUrl, svgContent, callback);
-	}
+  function updateSvg(callback) {
+    self.write(svgUrl, svgContent, callback)
+  }
 
-	updateXml(function(){
-		updateSvg(function(){
-			window.keepworkSaveUrl = {};
-			window.keepworkSaveUrl.xmlUrl = self.getCurRawUrl() + xmlUrl;
-			window.keepworkSaveUrl.svgUrl = self.getCurRawUrl() + svgUrl;
-			
-			if(typeof callback === 'function'){
-				callback();
-			}
-		})
-	});
-};
+	window.keepworkSaveUrl = {}
+
+  updateXml(function(response, url) {
+		window.keepworkSaveUrl.xmlUrl = url
+
+    updateSvg(function(response, url) {
+      window.keepworkSaveUrl.svgUrl = url
+
+      if (typeof callback === 'function') {
+        callback()
+      }
+    })
+  })
+}
 
 KeepworkClient.prototype.insertFile = function(title, data, success, error) {
-	var self = this;
-	var url = self.getCurRawUrl() + self.getUrlByTitle(title, '.xml');
+  var self = this
+  var url = this.getGitlabBaseUrl() + '/projects/' + this.getProjectPath() + '/files/' + self.getUrlByTitle(title, '.xml')
 
-	function save() {
-		self.save(title, data, mxUtils.bind(self, function()
-		{
-			if (typeof success === 'function') {
-				success(new KeepworkFile(this.ui, data, title));
-			}
-		}));
-	}
+  function save() {
+    self.save(
+      title,
+      data,
+      mxUtils.bind(self, function() {
+        if (typeof success === 'function') {
+          success(new KeepworkFile(this.ui, data, title))
+        }
+      })
+    )
+  }
 
-	self.get(
-		url + '?&ref=master',
-		{},
-		function() {
-				self.ui.confirm(mxResources.get('fileExistSave'), function() {
-					save();
-				}, function() {
-					if (typeof error === 'function') {
-						error();
-					}
-				});
-		},
-		function() {
-			save();
-		}
-	)
-};
+  self.get(
+    url,
+    {},
+    function() {
+      self.ui.confirm(
+        mxResources.get('fileExistSave'),
+        function() {
+          save()
+        },
+        function() {
+          if (typeof error === 'function') {
+            error()
+          }
+        }
+      )
+    },
+    function() {
+      save()
+    }
+  )
+}
