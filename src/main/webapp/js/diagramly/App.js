@@ -475,11 +475,11 @@ App.main = function(callback, createUi)
 			if (temp != null)
 			{
 				// Used to request draw.io sources in dev mode
-				var drawDevUrl = '';
+				var drawDevUrl = '/board';
 
-				if (urlParams['drawdev'] == '1')
+				if (urlParams['keepworkdev'] == '1')
 				{
-					drawDevUrl = document.location.protocol + '//drawhost.jgraph.com/';
+					drawDevUrl = document.location.protocol + '//localhost:8100/board';
 				}
 				
 				// Mapping from key to URL in App.plugins
