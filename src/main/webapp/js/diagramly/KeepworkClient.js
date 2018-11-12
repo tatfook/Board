@@ -237,18 +237,18 @@ KeepworkClient.prototype.getOldData = function() {
 KeepworkClient.prototype.pickFile = function() {
   var self = this
 
+  var file = self.ui.getCurrentFile()
+
+  if (file) {
+    file.close(true)
+  }
+
   if (self.getXmlUrl() || self.getOldData()) {
     self.ui.loadFile('K')
   } else {
-    setTimeout(function() {
-      var file = self.ui.getCurrentFile()
-
-      if (file) {
-        file.close(true)
-			}
-
-      self.create()
-    }, 200)
+    self.ui.fileLoaded(null);
+    self.ui.hideDialog();
+    self.create()
   }
 }
 
