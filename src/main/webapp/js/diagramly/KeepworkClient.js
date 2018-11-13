@@ -204,15 +204,9 @@ KeepworkClient.prototype.getFile = function(id, callback) {
 
   if (url) {
     this.get(url + '?bust' + Date.now(), null, function(data) {
-			if (url.match('api-stage')) {
-				if (data && data.content && typeof callback === 'function') {
-					callback(new KeepworkFile(self.ui, data.content, self.getFilenameByUrl()))
-				}
-			} else {
-				if (data && typeof callback === 'function') {
-					callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
-				}
-			}
+			if (data && typeof callback === 'function') {
+        callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+      }
     })
   } else {
     var olddata = self.getOldData()
@@ -243,11 +237,12 @@ KeepworkClient.prototype.pickFile = function() {
     file.close(true)
   }
 
+  self.ui.fileLoaded(null);
+  self.ui.hideDialog();
+
   if (self.getXmlUrl() || self.getOldData()) {
     self.ui.loadFile('K')
   } else {
-    self.ui.fileLoaded(null);
-    self.ui.hideDialog();
     self.create()
   }
 }
