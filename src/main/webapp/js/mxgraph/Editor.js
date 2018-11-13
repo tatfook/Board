@@ -337,7 +337,7 @@ Editor.prototype.editAsNew = function(xml, title)
 			}
 
 			this.editorWindow = this.graph.openLink(this.getEditBlankUrl(p +
-				((p.length > 0) ? '&' : '?') + 'client=1'));
+				((p.length > 0) ? '&' : '?') + 'client=1'), null, true);
 		}
 		else
 		{
@@ -725,7 +725,7 @@ OpenFile.prototype.cancel = function(cancel)
 /**
  * Basic dialogs that are available in the viewer (print dialog).
  */
-function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll)
+function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, transparent)
 {
 	var dx = 0;
 	
@@ -791,7 +791,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll)
 		document.body.appendChild(this.bg);
 	}
 	
-	var div = editorUi.createDiv('geDialog');
+	var div = editorUi.createDiv(transparent? 'geTransDialog' : 'geDialog');
 	var pos = this.getPosition(left, top, w, h);
 	left = pos.x;
 	top = pos.y;

@@ -1535,6 +1535,7 @@ EditorUi.prototype.initCanvas = function()
 			pageInfo.style.verticalAlign = 'top';
 			pageInfo.style.fontFamily = 'Helvetica,Arial';
 			pageInfo.style.marginTop = '8px';
+			pageInfo.style.fontSize = '14px';
 			pageInfo.style.color = '#ffffff';
 			this.chromelessToolbar.appendChild(pageInfo);
 			
@@ -1738,6 +1739,15 @@ EditorUi.prototype.initCanvas = function()
 					
 					mxEvent.consume(evt);
 				}), Editor.editLargeImage, mxResources.get('edit'));
+			}
+			
+			if (this.lightboxToolbarActions != null)
+			{
+				for (var i = 0; i < this.lightboxToolbarActions.length; i++)
+				{
+					var lbAction = this.lightboxToolbarActions[i];
+					addButton(lbAction.fn, lbAction.icon, lbAction.tooltip);
+				}
 			}
 			
 			if (graph.lightbox && (urlParams['close'] == '1' || this.container != document.body))
@@ -3279,7 +3289,7 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
 /**
  * Displays a print dialog.
  */
-EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, noScroll)
+EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, noScroll, trasparent)
 {
 	this.editor.graph.tooltipHandler.hideTooltip();
 	
@@ -3288,7 +3298,7 @@ EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, no
 		this.dialogs = [];
 	}
 	
-	this.dialog = new Dialog(this, elt, w, h, modal, closable, onClose, noScroll);
+	this.dialog = new Dialog(this, elt, w, h, modal, closable, onClose, noScroll, trasparent);
 	this.dialogs.push(this.dialog);
 };
 

@@ -207,7 +207,8 @@ App.pluginRegistry = {'4xAKTrabTpTzahoLthkwPNUn': '/plugins/explore.js',
 	'trees': '/plugins/trees/trees.js', 'import': '/plugins/import.js',
 	'replay': '/plugins/replay.js', 'anon': '/plugins/anonymize.js',
 	'tr': '/plugins/trello.js', 'f5': '/plugins/rackF5.js',
-	'tickets': '/plugins/tickets.js', 'webcola': '/plugins/webcola/webcola.js'};
+	'tickets': '/plugins/tickets.js', 'flow': '/plugins/flow.js',
+	'webcola': '/plugins/webcola/webcola.js'};
 
 /**
  * Function: authorize
@@ -442,30 +443,6 @@ App.main = function(callback, createUi)
 			}
 		};
 	}
-	
-	// Adds configuration
-	if (window.location.hash != null && window.location.hash.substring(0, 2) == '#C')
-	{
-		try
-		{
-			var config = JSON.parse(decodeURIComponent(
-					window.location.hash.substring(2)));
-			Editor.configure(config, true);
-			
-			if (config.open != null)
-			{
-				window.location.hash = config.open;
-			}
-			else
-			{
-				window.location.hash = '';
-			}
-		}
-		catch (e)
-		{
-			console.log(e);
-		}
-	}
 
 	if (window.mxscript != null)
 	{
@@ -498,11 +475,11 @@ App.main = function(callback, createUi)
 			if (temp != null)
 			{
 				// Used to request draw.io sources in dev mode
-				var drawDevUrl = '';
+				var drawDevUrl = '/board';
 
-				if (urlParams['drawdev'] == '1')
+				if (urlParams['keepworkdev'] == '1')
 				{
-					drawDevUrl = document.location.protocol + '//drawhost.jgraph.com/';
+					drawDevUrl = document.location.protocol + '//localhost:8100/board';
 				}
 				
 				// Mapping from key to URL in App.plugins
@@ -702,11 +679,72 @@ App.main = function(callback, createUi)
 		});
 	};
 	
-	// Adds required resources (disables loading of fallback properties, this can only
-	// be used if we know that all keys are defined in the language specific file)
-	mxResources.loadDefaultBundle = false;
-	doLoad(mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) ||
-		mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage));
+	function doConfigure(config)
+	{
+		try
+		{
+			var config = JSON.parse(decodeURIComponent(
+					window.location.hash.substring(2)));
+			Editor.configure(config, true);
+			
+			if (config.open != null)
+			{
+				window.location.hash = config.open;
+			}
+		}
+		catch (e)
+		{
+			console.log(e);
+		}
+	};
+	
+	function doMain()
+	{
+		// Adds required resources (disables loading of fallback properties, this can only
+		// be used if we know that all keys are defined in the language specific file)
+		mxResources.loadDefaultBundle = false;
+		doLoad(mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) ||
+			mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage));
+	};
+
+	// Sends load event if configuration is requested and waits for configure action
+	if (urlParams['configure'] == '1')
+	{
+		var op = window.opener || window.parent;
+		
+		var configHandler = function(evt)
+		{
+			if (evt.source == op)
+			{
+				try
+				{
+					var data = JSON.parse(evt.data);
+					
+					if (data != null && data.action == 'configure')
+					{
+						mxEvent.removeListener(window, 'message', configHandler);					
+						Editor.configure(data.config, true);
+						doMain();
+					}
+				}
+				catch (e)
+				{
+					if (window.console != null)
+					{
+						console.log('Error in configuration: ' + e);
+					}
+				}
+			}
+		};
+		
+		// Receives XML message from opener and puts it into the graph
+		mxEvent.addListener(window, 'message', configHandler);
+		op.postMessage(JSON.stringify({event: 'load'}), '*');
+	}
+	else
+	{
+		doMain();
+	}
 };
 
 //Extends EditorUi
@@ -3008,7 +3046,7 @@ App.prototype.saveFile = function(forceDialog)
 						
 						// Do not use a filename to use undefined mode
 						window.openFile.setData(this.getFileData(true));
-						this.openLink(this.getUrl(window.location.pathname));
+						this.openLink(this.getUrl(window.location.pathname), null, true);
 					}
 					else if (prev != mode)
 					{
@@ -3533,6 +3571,43 @@ App.prototype.loadFile = function(id, sameWindow, file, success)
 			{
 				var url = decodeURIComponent(id.substring(1));
 				
+				var doFallback = mxUtils.bind(this, function()
+				{
+					// Fallback for non-public Google Drive diagrams
+					if (url.substring(0, 31) == 'https://drive.google.com/uc?id=' &&
+						(this.drive != null || typeof window.DriveClient === 'function'))
+					{
+						this.hideDialog();
+						
+						var fallback = mxUtils.bind(this, function()
+						{
+							this.spinner.stop();
+							
+							if (this.drive != null)
+							{
+								this.loadFile('G' + url.substring(31, url.lastIndexOf('&ex')), sameWindow, success);
+								
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						});
+						
+						if (!fallback() && this.spinner.spin(document.body, mxResources.get('loading')))
+						{
+							this.addListener('clientLoaded', fallback);
+						}
+						
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				});
+				
 				this.loadTemplate(url, mxUtils.bind(this, function(text)
 				{
 					this.spinner.stop();
@@ -3575,38 +3650,17 @@ App.prototype.loadFile = function(id, sameWindow, file, success)
 						
 						if (!this.fileLoaded(tempFile))
 						{
-							// Fallback for non-public Google Drive diagrams
-							if (url.substring(0, 31) == 'https://drive.google.com/uc?id=' &&
-								(this.drive != null || typeof window.DriveClient === 'function'))
-							{
-								this.hideDialog();
-								
-								var fallback = mxUtils.bind(this, function()
-								{
-									if (this.drive != null)
-									{
-										this.spinner.stop();
-										this.loadFile('G' + url.substring(31, url.lastIndexOf('&')), sameWindow, success);
-										
-										return true;
-									}
-									else
-									{
-										return false;
-									}
-								});
-								
-								if (!fallback() && this.spinner.spin(document.body, mxResources.get('loading')))
-								{
-									this.addListener('clientLoaded', fallback);
-								}
-							}
+							doFallback();
 						}
 					}
 				}), mxUtils.bind(this, function()
 				{
-					this.spinner.stop();
-					this.handleError({message: mxResources.get('fileNotFound')}, mxResources.get('errorLoadingFile'));
+					if (!doFallback())
+					{
+						this.spinner.stop();
+						this.handleError({message: mxResources.get('fileNotFound')},
+							mxResources.get('errorLoadingFile'));
+					}
 				}));
 			}
 			else
@@ -4450,8 +4504,8 @@ App.prototype.convertFile = function(url, filename, mimeType, extension, success
 		gitHubUrl = true;
 	}
 	
-	// Workaround for wrong binary response with VSD(X) files
-	if (/\.vsdx?$/i.test(filename) && Graph.fileSupport && new XMLHttpRequest().upload &&
+	// Workaround for wrong binary response with VSD(X) & VDX files
+	if (/\.v(dx|sdx?)$/i.test(filename) && Graph.fileSupport && new XMLHttpRequest().upload &&
 		typeof new XMLHttpRequest().responseType === 'string')
 	{
 		var req = new XMLHttpRequest();
