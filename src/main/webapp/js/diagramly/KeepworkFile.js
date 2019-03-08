@@ -106,6 +106,7 @@ KeepworkFile.prototype.open = function()
 	});
 	
 	this.ui.editor.graph.model.addListener(mxEvent.CHANGE, this.changeListener);
+  window.addEventListener('keypress', this.changeListener);
 
 	// Some options trigger autosave
 	this.ui.editor.graph.addListener('gridSizeChanged', this.changeListener);
