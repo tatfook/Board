@@ -2681,7 +2681,7 @@
     		Sidebar.prototype.thumbHeight = 64;
 		}
 
-		EditorUi.prototype.footerHeight = (screen.width >= 760 && screen.height >= 240) ? 46 : 0;
+		EditorUi.prototype.footerHeight = (screen.width >= 760 && screen.height >= 240) ? 0 : 0;
 		
 		// Fetches footer from page
 		EditorUi.prototype.createFooter = function()
