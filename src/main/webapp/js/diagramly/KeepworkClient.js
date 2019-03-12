@@ -5,18 +5,18 @@
  */
 
 KeepworkClient = function(editorUi) {
-  DrawioClient.call(this, editorUi, 'ghauth')
+  DrawioClient.call(this, editorUi, "ghauth")
 
-	this.requestTimeout = 10000
-	this.userinfo = {}
-	this.token = ''
+  this.requestTimeout = 10000
+  this.userinfo = {}
+  this.token = ""
 
-  var cookie = document.cookie.split(';')
+  var cookie = document.cookie.split(";")
 
   for (var item in cookie) {
     var currentItem = mxUtils.trim(cookie[item])
 
-    if (currentItem.substring(0, 6) == 'token=') {
+    if (currentItem.substring(0, 6) == "token=") {
       this.token = currentItem.substring(6)
     }
   }
@@ -29,58 +29,58 @@ mxUtils.extend(KeepworkClient, DrawioClient)
 
 KeepworkClient.prototype.getKeepworkApiBaseUrl = function() {
   var hostname = window.location.hostname
-  var url = ''
+  var url = ""
 
-  if (hostname === 'localhost' || hostname.match(/\d+.\d+.\d+.\d+/)) {
-    url = 'https://api-stage.keepwork.com'
+  if (hostname === "localhost" || hostname.match(/\d+.\d+.\d+.\d+/)) {
+    url = "https://api-stage.keepwork.com"
   }
 
-  if (hostname === 'keepwork.com') {
-    url = 'https://api.keepwork.com'
+  if (hostname === "keepwork.com") {
+    url = "https://api.keepwork.com"
   }
 
-  if (hostname === 'stage.keepwork.com') {
-    url = 'https://api-stage.keepwork.com'
+  if (hostname === "stage.keepwork.com") {
+    url = "https://api-stage.keepwork.com"
   }
 
-  if (hostname === 'release.keepwork.com') {
-    url = 'https://api-release.keepwork.com'
+  if (hostname === "release.keepwork.com") {
+    url = "https://api-release.keepwork.com"
   }
 
-	return url
+  return url
 }
 
 KeepworkClient.prototype.getCoreserviceBaseUrl = function() {
-	return this.getKeepworkApiBaseUrl() + '/core/v0'
+  return this.getKeepworkApiBaseUrl() + "/core/v0"
 }
 
-KeepworkClient.prototype.getGitlabBaseUrl = function () {
-	return this.getKeepworkApiBaseUrl() + '/git/v0'
+KeepworkClient.prototype.getGitlabBaseUrl = function() {
+  return this.getKeepworkApiBaseUrl() + "/git/v0"
 }
 
 KeepworkClient.prototype.getProjectPath = function() {
-	var url = (this.userinfo.username || '') + '/' + '__keepwork__'
+  var url = (this.userinfo.username || "") + "/" + "__keepwork__"
 
-	return encodeURIComponent(url)
+  return encodeURIComponent(url)
 }
 
 KeepworkClient.prototype.getHeader = function() {
-	return {
-		Authorization: 'Bearer ' + this.token || ''
-	}
+  return {
+    Authorization: "Bearer " + this.token || ""
+  }
 }
 
 KeepworkClient.prototype.getUserInfo = function() {
-  var url = this.getCoreserviceBaseUrl() + '/users/profile'
+  var url = this.getCoreserviceBaseUrl() + "/users/profile"
   var self = this
 
   $.ajax({
-    type: 'GET',
+    type: "GET",
     timeout: self.requestTimeout, // 超时时间 10 秒
     headers: self.getHeader(),
     url: url,
     success: function(response) {
-      if (typeof response === 'object') {
+      if (typeof response === "object") {
         self.userinfo = response
       }
     }
@@ -92,18 +92,24 @@ KeepworkClient.prototype.getUrlByTitle = function(title, suffix) {
     return false
   }
 
-  var url = this.userinfo.username + '/board/' + window.pagePath + '/' + title + suffix
+  var url =
+    this.userinfo.username + "/board/" + window.pagePath + "/" + title + suffix
 
   return encodeURIComponent(url)
 }
 
 KeepworkClient.prototype.write = function(path, content, callback) {
-  var url = this.getGitlabBaseUrl() + '/projects/' + this.getProjectPath() + '/files/' + path
+  var url =
+    this.getGitlabBaseUrl() +
+    "/projects/" +
+    this.getProjectPath() +
+    "/files/" +
+    path
   var self = this
 
   function upload(callback) {
     $.ajax({
-      type: 'POST',
+      type: "POST",
       timeout: self.requestTimeout,
       headers: self.getHeader(),
       url: url,
@@ -111,12 +117,12 @@ KeepworkClient.prototype.write = function(path, content, callback) {
         content: content
       },
       success: function(response) {
-        if (typeof callback === 'function') {
+        if (typeof callback === "function") {
           callback(response, url)
         }
       },
       error: function() {
-        if (typeof callback === 'function') {
+        if (typeof callback === "function") {
           callback()
         }
       }
@@ -125,7 +131,7 @@ KeepworkClient.prototype.write = function(path, content, callback) {
 
   function update(callback) {
     $.ajax({
-      type: 'PUT',
+      type: "PUT",
       timeout: self.requestTimeout,
       headers: self.getHeader(),
       url: url,
@@ -133,7 +139,7 @@ KeepworkClient.prototype.write = function(path, content, callback) {
         content: content
       },
       success: function(response) {
-        if (typeof callback === 'function') {
+        if (typeof callback === "function") {
           callback(response, url)
         }
       }
@@ -158,17 +164,17 @@ KeepworkClient.prototype.get = function(url, params, success, error) {
   var self = this
 
   $.ajax({
-    type: 'GET',
+    type: "GET",
     timeout: self.requestTimeout,
     data: params || {},
     url: url,
     success: function(response) {
-      if (typeof success === 'function') {
+      if (typeof success === "function") {
         success(response)
       }
     },
     error: function() {
-      if (typeof error === 'function') {
+      if (typeof error === "function") {
         error()
       }
     }
@@ -176,7 +182,7 @@ KeepworkClient.prototype.get = function(url, params, success, error) {
 }
 
 KeepworkClient.prototype.getXmlUrl = function() {
-  var url = ''
+  var url = ""
 
   if (keepworkSaveUrl && keepworkSaveUrl.xmlUrl) {
     url = keepworkSaveUrl.xmlUrl
@@ -188,12 +194,12 @@ KeepworkClient.prototype.getXmlUrl = function() {
 KeepworkClient.prototype.getFilenameByUrl = function(url) {
   var url = url || decodeURIComponent(this.getXmlUrl())
 
-  var lastDotIndex = url.lastIndexOf('.')
-  var lastSlashIndex = url.lastIndexOf('/')
+  var lastDotIndex = url.lastIndexOf(".")
+  var lastSlashIndex = url.lastIndexOf("/")
 
   var filename = url.substring(lastSlashIndex + 1, lastDotIndex)
 
-  filename = filename ? decodeURIComponent(filename) : ''
+  filename = filename ? decodeURIComponent(filename) : ""
 
   return filename
 }
@@ -203,26 +209,32 @@ KeepworkClient.prototype.getFile = function(id, callback) {
   var url = self.getXmlUrl()
 
   if (url) {
-    this.get(url + '?bust' + Date.now(), null, function(data) {
-			if (data && typeof callback === 'function') {
-        callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+    this.get(url + "?bust" + Date.now(), null, function(data) {
+      if (url.match('git/v')) {
+        if (data && data.content && typeof callback === 'function') {
+          callback(new KeepworkFile(self.ui, data.content, self.getFilenameByUrl()))
+        }
+      } else {
+        if (data && typeof callback === 'function') {
+          callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+        }
       }
     })
   } else {
     var olddata = self.getOldData()
 
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       setTimeout(() => {
-        callback(new KeepworkFile(self.ui, olddata, 'old-' + Date.now()))
+        callback(new KeepworkFile(self.ui, olddata, "old-" + Date.now()))
       }, 0)
     }
   }
 }
 
 KeepworkClient.prototype.getOldData = function() {
-  var data = boardOldData || ''
-  data = data.replace('<diagram version="0.0.1">', '')
-  data = data.replace('</diagram>', '')
+  var data = boardOldData || ""
+  data = data.replace('<diagram version="0.0.1">', "")
+  data = data.replace("</diagram>", "")
   data = this.ui.editor.graph.decompress(data)
 
   return data
@@ -237,12 +249,11 @@ KeepworkClient.prototype.pickFile = function() {
     file.close(true)
   }
 
-  self.ui.fileLoaded(null);
-  self.ui.hideDialog();
-
   if (self.getXmlUrl() || self.getOldData()) {
-    self.ui.loadFile('K')
+    self.ui.loadFile("K")
   } else {
+    self.ui.fileLoaded(null)
+    self.ui.hideDialog()
     self.create()
   }
 }
@@ -289,8 +300,8 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 
   var self = this
 
-  var xmlUrl = self.getUrlByTitle(title, '.xml')
-  var svgUrl = self.getUrlByTitle(title, '.svg')
+  var xmlUrl = self.getUrlByTitle(title, ".xml")
+  var svgUrl = self.getUrlByTitle(title, ".svg")
 
   function updateXml(callback) {
     self.write(xmlUrl, xmlContent, callback)
@@ -300,15 +311,15 @@ KeepworkClient.prototype.save = function(title, data, callback) {
     self.write(svgUrl, svgContent, callback)
   }
 
-	window.keepworkSaveUrl = {}
+  window.keepworkSaveUrl = {}
 
   updateXml(function(response, url) {
-		window.keepworkSaveUrl.xmlUrl = url
+    window.keepworkSaveUrl.xmlUrl = url
 
     updateSvg(function(response, url) {
       window.keepworkSaveUrl.svgUrl = url
 
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback()
       }
     })
@@ -317,14 +328,19 @@ KeepworkClient.prototype.save = function(title, data, callback) {
 
 KeepworkClient.prototype.insertFile = function(title, data, success, error) {
   var self = this
-  var url = this.getGitlabBaseUrl() + '/projects/' + this.getProjectPath() + '/files/' + self.getUrlByTitle(title, '.xml')
+  var url =
+    this.getGitlabBaseUrl() +
+    "/projects/" +
+    this.getProjectPath() +
+    "/files/" +
+    self.getUrlByTitle(title, ".xml")
 
   function save() {
     self.save(
       title,
       data,
       mxUtils.bind(self, function() {
-        if (typeof success === 'function') {
+        if (typeof success === "function") {
           success(new KeepworkFile(this.ui, data, title))
         }
       })
@@ -336,12 +352,12 @@ KeepworkClient.prototype.insertFile = function(title, data, success, error) {
     {},
     function() {
       self.ui.confirm(
-        mxResources.get('fileExistSave'),
+        mxResources.get("fileExistSave"),
         function() {
           save()
         },
         function() {
-          if (typeof error === 'function') {
+          if (typeof error === "function") {
             error()
           }
         }
