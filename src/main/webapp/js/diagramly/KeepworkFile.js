@@ -71,9 +71,8 @@ KeepworkFile.prototype.open = function()
 	
 	this.changeListener = mxUtils.bind(this, function(sender, eventObject)
 	{
-    this.inactiveSave();
-		var edit = (eventObject != null) ? eventObject.getProperty('edit') : null;
-		
+    var edit = (eventObject != null) ? eventObject.getProperty('edit') : null;
+    
 		if (this.changeListenerEnabled && this.isEditable() &&
 			(edit == null || !edit.ignoreEdit))
 		{
@@ -103,9 +102,10 @@ KeepworkFile.prototype.open = function()
 				this.addUnsavedStatus();
 			}
 		}
-	});
+  });
 	
-	this.ui.editor.graph.model.addListener(mxEvent.CHANGE, this.changeListener);
+  this.ui.editor.graph.model.addListener(mxEvent.CHANGE, this.changeListener);
+  window.addEventListener('keypress', this.changeListener);
 
 	// Some options trigger autosave
 	this.ui.editor.graph.addListener('gridSizeChanged', this.changeListener);
@@ -235,7 +235,6 @@ KeepworkFile.prototype.inactiveSave = function() {
     if (!currentFile.changeListener) {
       return false
     }
-
     if (self.modified && !currentFile.savingFile) {
       self.ui.actions.get(self.ui.mode == null ? 'saveAs' : 'save').funct()
     }
