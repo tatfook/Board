@@ -32,19 +32,19 @@ KeepworkClient.prototype.getKeepworkApiBaseUrl = function() {
   var url = ""
 
   if (hostname === "localhost" || hostname.match(/\d+.\d+.\d+.\d+/)) {
-    url = "https://api-stage.keepwork.com"
+    url = "http://api-dev.kp-para.cn"
   }
 
   if (hostname === "keepwork.com") {
     url = "https://api.keepwork.com"
   }
 
-  if (hostname === "stage.keepwork.com") {
-    url = "https://api-stage.keepwork.com"
+  if (hostname === "dev.kp-para.cn") {
+    url = "http://api-dev.kp-para.cn"
   }
 
-  if (hostname === "release.keepwork.com") {
-    url = "https://api-release.keepwork.com"
+  if (hostname === "rls.kp-para.cn") {
+    url = "http://api-rls.kp-para.cn"
   }
 
   return url
