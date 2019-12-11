@@ -210,10 +210,14 @@ KeepworkClient.prototype.getFile = function(id, callback) {
 
   if (url) {
     this.get(url + "?bust" + Date.now(), null, function(data) {
-      if (data && data.content && typeof callback === "function") {
-        callback(
-          new KeepworkFile(self.ui, data.content, self.getFilenameByUrl())
-        )
+      if (url.match('git/v')) {
+        if (data && data.content && typeof callback === 'function') {
+          callback(new KeepworkFile(self.ui, data.content, self.getFilenameByUrl()))
+        }
+      } else {
+        if (data && typeof callback === 'function') {
+          callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+        }
       }
     })
   } else {
