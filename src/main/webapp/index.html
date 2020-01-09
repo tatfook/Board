@@ -61,30 +61,30 @@
     }
 
     // Redirects page if required
-    if (urlParams['dev'] != '1') {
-      (function () {
-        var proto = window.location.protocol;
+    // if (urlParams['dev'] != '1') {
+    //   (function () {
+    //     var proto = window.location.protocol;
 
-        // Electron protocol is file:
-        if (proto != 'file:') {
-          var host = window.location.host;
+    //     // Electron protocol is file:
+    //     if (proto != 'file:') {
+    //       var host = window.location.host;
 
-          // Redirects apex and rt to www
-          if (host === 'draw.io' || host === 'rt.draw.io') {
-            host = 'www.draw.io';
-          }
+    //       // Redirects apex and rt to www
+    //       if (host === 'draw.io' || host === 'rt.draw.io') {
+    //         host = 'www.draw.io';
+    //       }
 
-          var href = proto + '//' + host + window.location.href.substring(
-            window.location.protocol.length +
-            window.location.host.length + 2);
+    //       var href = proto + '//' + host + window.location.href.substring(
+    //         window.location.protocol.length +
+    //         window.location.host.length + 2);
 
-          // Redirects if href changes
-          if (href != window.location.href) {
-            window.location.href = href;
-          }
-        }
-      })();
-    }
+    //       // Redirects if href changes
+    //       if (href != window.location.href) {
+    //         window.location.href = href;
+    //       }
+    //     }
+    //   })();
+    // }
 
     /**
      * get keepwork language setting
@@ -113,30 +113,30 @@
     /**
      * Adds meta tags with application name (depends on offline URL parameter)
      */
-    (function () {
-      function addMeta(name, content) {
-        try {
-          var s = document.createElement('meta');
-          s.setAttribute('name', name);
-          s.setAttribute('content', content);
+    // (function () {
+    //   function addMeta(name, content) {
+    //     try {
+    //       var s = document.createElement('meta');
+    //       s.setAttribute('name', name);
+    //       s.setAttribute('content', content);
 
-          var t = document.getElementsByTagName('meta')[0];
-          t.parentNode.insertBefore(s, t);
-        }
-        catch (e) {
-          // ignore
-        }
-      };
+    //       var t = document.getElementsByTagName('meta')[0];
+    //       t.parentNode.insertBefore(s, t);
+    //     }
+    //     catch (e) {
+    //       // ignore
+    //     }
+    //   };
 
-      var name = 'draw.io';
+    //   var name = 'draw.io';
 
-      if (urlParams['offline'] === '1') {
-        name += ' app';
-      }
+    //   if (urlParams['offline'] === '1') {
+    //     name += ' app';
+    //   }
 
-      addMeta('apple-mobile-web-app-title', name);
-      addMeta('application-name', name);
-    })();
+    //   addMeta('apple-mobile-web-app-title', name);
+    //   addMeta('application-name', name);
+    // })();
   </script>
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
