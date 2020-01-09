@@ -3,13 +3,15 @@
  * place:foshan
  * date:2018.7.17
  */
-
 KeepworkClient = function(editorUi) {
   DrawioClient.call(this, editorUi, "ghauth")
 
   this.requestTimeout = 10000
   this.userinfo = {}
   this.token = ""
+  this.domainUrl = editorUi.editor.graph.domainPathUrl // http://localhost:7001/ed/aaa/bbb/ccc
+  var tmpPaths = this.domainUrl.replace('//', '').split('/') // 
+  this.projectPath = tmpPaths[2] + '/' + tmpPaths[3] // aaa/bbb
 
   var cookie = document.cookie.split(";")
 
@@ -32,19 +34,19 @@ KeepworkClient.prototype.getKeepworkApiBaseUrl = function() {
   var url = ""
 
   if (hostname === "localhost" || hostname.match(/\d+.\d+.\d+.\d+/)) {
-    url = "https://api-stage.keepwork.com"
+    url = "http://api-dev.kp-para.cn"
   }
 
   if (hostname === "keepwork.com") {
     url = "https://api.keepwork.com"
   }
 
-  if (hostname === "stage.keepwork.com") {
-    url = "https://api-stage.keepwork.com"
+  if (hostname === "dev.kp-para.cn") {
+    url = "http://api-dev.kp-para.cn"
   }
 
-  if (hostname === "release.keepwork.com") {
-    url = "https://api-release.keepwork.com"
+  if (hostname === "rls.kp-para.cn") {
+    url = "http://api-rls.kp-para.cn"
   }
 
   return url
@@ -55,13 +57,11 @@ KeepworkClient.prototype.getCoreserviceBaseUrl = function() {
 }
 
 KeepworkClient.prototype.getGitlabBaseUrl = function() {
-  return this.getKeepworkApiBaseUrl() + "/git/v0"
+  return this.getKeepworkApiBaseUrl() + "/core/v0"
 }
 
-KeepworkClient.prototype.getProjectPath = function() {
-  var url = (this.userinfo.username || "") + "/" + "__keepwork__"
-
-  return encodeURIComponent(url)
+KeepworkClient.prototype.getEncodedProjectPath = function() {
+  return encodeURIComponent(this.projectPath)
 }
 
 KeepworkClient.prototype.getHeader = function() {
@@ -93,7 +93,7 @@ KeepworkClient.prototype.getUrlByTitle = function(title, suffix) {
   }
 
   var url =
-    this.userinfo.username + "/board/" + window.pagePath + "/" + title + suffix
+    this.projectPath + "/_config/board/" + title + suffix
 
   return encodeURIComponent(url)
 }
@@ -101,8 +101,8 @@ KeepworkClient.prototype.getUrlByTitle = function(title, suffix) {
 KeepworkClient.prototype.write = function(path, content, callback) {
   var url =
     this.getGitlabBaseUrl() +
-    "/projects/" +
-    this.getProjectPath() +
+    "/repos/" +
+    this.getEncodedProjectPath() +
     "/files/" +
     path
   var self = this
@@ -210,15 +210,13 @@ KeepworkClient.prototype.getFile = function(id, callback) {
 
   if (url) {
     this.get(url + "?bust" + Date.now(), null, function(data) {
-      if (url.match('git/v')) {
-        if (data && data.content && typeof callback === 'function') {
-          callback(new KeepworkFile(self.ui, data.content, self.getFilenameByUrl()))
-        }
-      } else {
         if (data && typeof callback === 'function') {
-          callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+          if (data.documentElement) {
+            callback(new KeepworkFile(self.ui, data.documentElement.innerHTML, self.getFilenameByUrl()))
+          } else {
+            callback(new KeepworkFile(self.ui, data, self.getFilenameByUrl()))
+          }
         }
-      }
     })
   } else {
     var olddata = self.getOldData()
@@ -331,7 +329,7 @@ KeepworkClient.prototype.insertFile = function(title, data, success, error) {
   var url =
     this.getGitlabBaseUrl() +
     "/projects/" +
-    this.getProjectPath() +
+    this.getEncodedProjectPath() +
     "/files/" +
     self.getUrlByTitle(title, ".xml")
 
