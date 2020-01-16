@@ -167,6 +167,7 @@ KeepworkClient.prototype.get = function(url, params, success, error) {
     type: "GET",
     timeout: self.requestTimeout,
     data: params || {},
+    headers: self.getHeader(),
     url: url,
     success: function(response) {
       if (typeof success === "function") {
